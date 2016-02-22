@@ -1,0 +1,29 @@
+{
+  "name": "ded-network",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raelcun/ded-network.git"
+  },
+  "author": "Dan Taylor",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raelcun/ded-network/issues"
+  },
+  "homepage": "https://github.com/raelcun/ded-network#readme",
+  "dependencies": {
+    "bluebird": "^3.3.1",
+    "hat": "0.0.3",
+    "lodash": "^4.5.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.2",
+    "mocha": "^2.4.5"
+  }
+}

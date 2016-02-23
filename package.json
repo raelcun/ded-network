@@ -17,11 +17,14 @@
   },
   "homepage": "https://github.com/raelcun/ded-network#readme",
   "dependencies": {
+    "colors": "^1.1.2",
     "hat": "0.0.3",
-    "lodash": "^4.5.0"
+    "lodash": "^4.5.0",
+    "ursa": "^0.9.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "faker": "^3.0.1",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5"
   }

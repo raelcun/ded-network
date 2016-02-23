@@ -5,14 +5,14 @@ const expect = require('chai').expect,
       _ = require('lodash');
      
 const numNodes = 5;
-const nodeOpts = _.range(numNodes).map(e => { return { addr: '127.0.0.1', port: 3100 + e }});
+const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e }});
 
 const internals = {};
 internals.nodes = [];
 
 describe('integration', () => {
   beforeEach(done => {
-    Promise.all(nodeOpts.map(opt => Node(opt.id, opt.addr, opt.port))).then(nodes => {
+    Promise.all(nodeOpts.map(opt => Node(opt))).then(nodes => {
       internals.nodes = nodes;
       done();
     });

@@ -1,6 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect,
+      Contact = require('../lib/contact'),
       Node = require('../lib/node'),
       magic = require('../lib/magic'),
       _ = require('lodash');
@@ -20,10 +21,12 @@ describe('router', () => {
   });
 
   it('#updateContact', (done) => {
-    internals.nodes[0].router.updateContact(internals.nodes[1]);
-    expect(internals.nodes[0].id).to.equal(nodeOpts[0].id);
-    expect(internals.nodes[1].id).to.equal(nodeOpts[1].id);
+    internals.nodes[0].router.updateContact(Contact.fromNode(internals.nodes[1]));
     expect(internals.nodes[0].router._buckets[158][0].id).to.equal(internals.nodes[1].id);
+    done();
+  });
+  it('#getNearestNodes', (done) => {
+    internals.nodes[0].router.getNearestNodes(Contact.fromNode(internals.nodes[1]));
     done();
   });
 });

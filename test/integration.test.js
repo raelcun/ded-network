@@ -28,14 +28,14 @@ describe('integration', () => {
     });
     
     it('#message', (done) => {
-      internals.nodes[0].sendMessage(internals.nodes[1].asContact(), 'hello world').then(result => {
+      internals.nodes[0].sendMessage(internals.nodes[1], 'hello world').then(result => {
         expect(result).to.equal(true);
         done();
       });
     });
   
     it('#find', (done) => {
-      internals.nodes[0].find(internals.nodes[1].asContact()).then(result => {
+      internals.nodes[0].find(internals.nodes[1]).then(result => {
         expect(typeof result).to.equal('string');
         done();
       });

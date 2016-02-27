@@ -2,10 +2,11 @@
 
 const expect = require('chai').expect,
       Node = require('../lib/node'),
-      _ = require('lodash');
+      _ = require('lodash'),
+      Logger = require('../lib/logger');
      
 const numNodes = 5;
-const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e }});
+const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger: Logger({ minLevel: 4 }) }; });
 
 const internals = {};
 internals.nodes = [];
@@ -27,14 +28,14 @@ describe('integration', () => {
     });
     
     it('#message', (done) => {
-      internals.nodes[0].sendMessage(internals.nodes[1], 'hello world').then(result => {
+      internals.nodes[0].sendMessage(internals.nodes[1].asContact(), 'hello world').then(result => {
         expect(result).to.equal(true);
         done();
       });
     });
   
     it('#find', (done) => {
-      internals.nodes[0].find(internals.nodes[1]).then(result => {
+      internals.nodes[0].find(internals.nodes[1].asContact()).then(result => {
         expect(typeof result).to.equal('string');
         done();
       });

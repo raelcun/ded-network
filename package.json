@@ -25,6 +25,9 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "faker": "^3.0.1",
+    "gulp": "^3.9.1",
+    "gulp-istanbul": "^0.10.3",
+    "gulp-mocha": "^2.2.0",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5"
   }

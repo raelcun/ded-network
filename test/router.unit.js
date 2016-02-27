@@ -4,10 +4,12 @@ const expect = require('chai').expect,
       Contact = require('../lib/contact'),
       Node = require('../lib/node'),
       magic = require('../lib/magic'),
-      _ = require('lodash');
+      _ = require('lodash'),
+      Logger = require('../lib/logger');
      
 const numNodes = 2;
-const nodeOpts = [{id: '6bb852acbce77aa6bf09a36a81c45f358e3207bc', ip: '127.0.0.1', port: 4000}, {id: '0888b900099c87050ee5aa3efb253b830fdee8b9', ip: '127.0.0.1', port: 4001}]
+const logger = Logger({ minLevel: 4 });
+const nodeOpts = [{id: '6bb852acbce77aa6bf09a36a81c45f358e3207bc', ip: '127.0.0.1', port: 4000, logger: logger}, {id: '0888b900099c87050ee5aa3efb253b830fdee8b9', ip: '127.0.0.1', port: 4001, logger: logger}];
 
 const internals = {};
 internals.nodes = [];

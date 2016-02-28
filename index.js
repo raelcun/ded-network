@@ -26,5 +26,5 @@ const nodeOpts = [{id: '6bb852acbce77aa6bf09a36a81c45f358e3207bc', ip: '127.0.0.
 const nodesP = nodeOpts.map(opt => Node(opt));
 
 Promise.all(nodesP).then(nodes => {
-  console.log(magic.getBucketIndex(nodes[0].id, nodes[1].id));
+  nodes.forEach(e => e.close(() => console.log('closed')));
 });

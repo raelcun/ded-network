@@ -3,10 +3,10 @@
 const expect = require('chai').expect,
       Node = require('../lib/node'),
       _ = require('lodash'),
-      Logger = require('../lib/logger');
+      logger = require('../lib/logger')({ minLevel: 4, maxLevel: 4 });
      
 const numNodes = 5;
-const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger: Logger({ minLevel: 4 }) }; });
+const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });
 
 const internals = {};
 internals.nodes = [];
@@ -17,6 +17,11 @@ describe('integration', () => {
       internals.nodes = nodes;
       done();
     });
+  });
+  
+  after(done => {
+    internals.nodes.forEach(e => e.close());
+    done();
   });
   
   describe('Node', () => {
@@ -36,7 +41,7 @@ describe('integration', () => {
   
     it('#find', (done) => {
       internals.nodes[0].find(internals.nodes[1]).then(result => {
-        expect(typeof result).to.equal('string');
+        expect(result).to.be.a('string');
         done();
       });
     });

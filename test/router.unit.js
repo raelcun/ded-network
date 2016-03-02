@@ -7,7 +7,7 @@ const expect = require('chai').expect,
       _ = require('lodash'),
       Logger = require('../lib/logger'),
       utils = require('../lib/utils');
-     
+
 const numNodes = 5;
 const logger = Logger({ minLevel: 4 });
 
@@ -54,17 +54,16 @@ describe('router', () => {
       const to1 = Contact.fromNode(internals.nodes[toIndex]);
       const to2 = Contact.fromNode(internals.nodes[toIndex]);
       const index = magic.getBucketIndex(from.id, to1.id);
-      console.log(magic.getRandomInBucketRangeBuffer(index))
+      //console.log(magic.getRandomInBucketRangeBuffer(index))
       from.router.updateContact(to1);
       from.router.updateContact(to2);
-      console.log(from.router._buckets[index])
+      //console.log(from.router._buckets[index])
       done()
     });
   })
   
   it('#getNearestNodes', (done) => {
     internals.nodes[0].router.updateContact(internals.nodes[1].asContact());
-    internals.nodes[0].router.getNearestNodes();
-    done();
+    internals.nodes[0].router.getNearestNodes(internals.nodes[1].id).then(() => { done() });
   });
 });

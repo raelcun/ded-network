@@ -2,8 +2,10 @@
 
 const expect = require('chai').expect,
       crypto = require('../lib/crypto'),
-      constants = require('../lib/constants');
+      constants = require('../lib/constants'),
+      Logger = require('../lib/logger');
 
+const logger = Logger({ minLevel: 3 })
 
 describe('Crypto', () => {
 
@@ -87,6 +89,7 @@ describe('Crypto', () => {
   describe('#decryptAndVerify', () => {
 
     it('should decrypt data and verify signature', () => {
+    	logger.warn('test1', 'test2')
       const data = 'super secret data';
       const source_kp = crypto.generateKeyPair();
       const dest_kp = crypto.generateKeyPair();

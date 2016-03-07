@@ -4,7 +4,6 @@ const expect = require('chai').expect,
       Contact = require('../lib/contact'),
       Command = require('../lib/command'),
       _ = require('lodash'),
-      logger = require('../lib/logger')({ minLevel: 4 }),
       faker = require('faker'),
       utils = require('../lib/utils');
 

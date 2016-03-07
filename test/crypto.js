@@ -76,7 +76,7 @@ describe('Crypto', () => {
 
   describe('#encryptAndSign', () => {
 
-    it('should encrypt data and add signature to buffer', () => {
+    it('should encrypt data and add signature', () => {
       const data = 'super secret data';
       const source_kp = crypto.generateKeyPair();
       const dest_kp = crypto.generateKeyPair();
@@ -97,6 +97,34 @@ describe('Crypto', () => {
       const output = dest_kp.decryptAndVerify(source_kp.public, payload);
       expect(output.payload).to.equal(data);
       expect(output.verified).to.be.true;
+    })
+
+  })
+
+  describe('#aesEncrypt', () => {
+
+    it('should return encrypted message, shared key, and iv', () => {
+      const encrypted = crypto.aesEncrypt('super secret data');
+      expect(typeof encrypted.payload).to.equal('string');
+      expect(typeof encrypted.key).to.equal('object'); // buffer object
+      expect(typeof encrypted.iv).to.equal('object'); // buffer object
+    })
+
+    it('should return and encrypted string different than input', () => {
+      const data = 'super secret data';
+      const encrypted = crypto.aesEncrypt(data);
+      expect(encrypted.payload).to.not.equal(data);
+    })
+
+  })
+
+  describe('#aesDecrypt', () => {
+
+    it('should decrypt successfully using shared key', () => {
+      const data = 'super secret data';
+      const encrypted = crypto.aesEncrypt(data);
+      const decrypted = crypto.aesDecrypt(encrypted.payload, encrypted.key, encrypted.iv);
+      expect(decrypted).to.equal(data);
     })
 
   })

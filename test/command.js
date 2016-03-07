@@ -16,10 +16,11 @@ const contacts = _.range(3).map(e => Contact({
 describe('Command', () => {
   describe('#createCommand', () => {
     it('should default id', done => {
+      const source = contacts[0];
       const dest = contacts[1];
       const strCommand = 'my command';
       const payload = { test: 'this is my payload' };
-      const command = Command.createCommand(dest, strCommand, payload);
+      const command = Command.createCommand(dest, source, strCommand, payload);
       expect(command.id).to.be.a('string');
       expect(command.destination.ip).to.be.a('string');
       expect(command.destination.ip).to.equal(dest.ip);
@@ -30,13 +31,14 @@ describe('Command', () => {
       expect(command.payload).to.deep.equal(payload);
       done();
     });
-    
+
     it('should override id', done => {
       const id = utils.generateId();
+      const source = contacts[0];
       const dest = contacts[1];
       const strCommand = 'my command';
       const payload = { test: 'this is my payload' };
-      const command = Command.createCommand(dest, strCommand, payload, id);
+      const command = Command.createCommand(dest, source, strCommand, payload, id);
       expect(command.id).to.be.a('string');
       expect(command.id).to.equal(id);
       expect(command.destination.ip).to.be.a('string');
@@ -49,7 +51,7 @@ describe('Command', () => {
       done();
     });
   });
-  
+
   it('#createPingReq', done => {
     const source = contacts[0];
     const dest = contacts[1];
@@ -64,7 +66,7 @@ describe('Command', () => {
     expect(request.payload.destinationId).to.equal(dest.id);
     done();
   });
-  
+
   it('#createPingRes', done => {
     const source = contacts[0];
     const dest = contacts[1];
@@ -76,7 +78,7 @@ describe('Command', () => {
     expect(response.payload.destinationId).to.equal(source.id);
     done();
   });
-  
+
   it('#createMessageReq', done => {
     const source = contacts[0];
     const dest = contacts[1];
@@ -92,7 +94,7 @@ describe('Command', () => {
     expect(request.payload.strMessage).to.equal(message);
     done();
   });
-  
+
   it('#createMessageRes', done => {
     const source = contacts[0];
     const dest = contacts[1];
@@ -105,7 +107,7 @@ describe('Command', () => {
     expect(response.payload.destinationId).to.equal(source.id);
     done();
   });
-  
+
   it('#createFindReq', done => {
     const source = contacts[0];
     const dest = contacts[1];
@@ -121,7 +123,7 @@ describe('Command', () => {
     expect(request.payload.publicKey).to.equal(key);
     done();
   });
-  
+
   it('#createMessageRes', done => {
     const source = contacts[0];
     const dest = contacts[1];

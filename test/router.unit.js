@@ -6,9 +6,10 @@ const expect = require('chai').expect,
       magic = require('../lib/magic'),
       _ = require('lodash'),
       Logger = require('../lib/logger'),
+      constants = require('../lib/constants'),
       utils = require('../lib/utils');
 
-const numNodes = 5;
+const numNodes = 10;
 const logger = Logger({ minLevel: 4 });
 
 const nodeOpts = _.range(numNodes).map(e => ({
@@ -31,39 +32,77 @@ describe('router', () => {
   });
 
   // false hope... for now
-  // describe('#updateContact', () => {
-  //   it('add contact to empty bucket', done => {
-  //     const fromIndex = utils.getRandomRange(0, numNodes - 1);
-  //     var toIndex = fromIndex;
-  //     while (fromIndex === toIndex) toIndex = utils.getRandomRange(0, numNodes - 1)
+  describe('#updateContact', () => {
+    it('add contact to empty bucket', done => {
+      const fromIndex = utils.getRandomRange(0, numNodes - 1);
+      var toIndex = fromIndex;
+      while (fromIndex === toIndex) toIndex = utils.getRandomRange(0, numNodes - 1)
       
-  //     const from = internals.nodes[fromIndex]
-  //     const to = internals.nodes[toIndex]
-  //     const index = magic.getBucketIndex(from.id, to.id)
-  //     from.router.updateContact(Contact.fromNode(to));
-  //     expect(from.router._buckets[index][0].id).to.equal(to.id);
-  //     done();
-  //   });
+      const from = internals.nodes[fromIndex]
+      const to = internals.nodes[toIndex]
+      const index = magic.getBucketIndex(from.id, to.id)
+      from.router.updateContactP(Contact.fromNode(to));
+      expect(from.router._buckets[index][0].id).to.equal(to.id);
+      done();
+    });
     
-  //   it('add contact to partially full bucket', done => {
-  //     const fromIndex = utils.getRandomRange(0, numNodes - 1)
-  //     var toIndex = fromIndex;
-  //     while (fromIndex === toIndex) toIndex = utils.getRandomRange(0, numNodes - 1)
+    it('add contact to partially full bucket', done => {
+      const fromIndex = utils.getRandomRange(0, numNodes - 1)
+      var toIndex = fromIndex;
+      while (fromIndex === toIndex) toIndex = utils.getRandomRange(0, numNodes - 1)
       
-  //     const from = internals.nodes[fromIndex];
-  //     const to1 = Contact.fromNode(internals.nodes[toIndex]);
-  //     const to2 = Contact.fromNode(internals.nodes[toIndex]);
-  //     const index = magic.getBucketIndex(from.id, to1.id);
-  //     //console.log(magic.getRandomInBucketRangeBuffer(index))
-  //     from.router.updateContact(to1);
-  //     from.router.updateContact(to2);
-  //     //console.log(from.router._buckets[index])
-  //     done()
-  //   });
-  // })
+      const from = internals.nodes[fromIndex];
+      const to1 = Contact.fromNode(internals.nodes[toIndex]);
+      const to2 = Contact.fromNode(internals.nodes[toIndex]);
+      const index = magic.getBucketIndex(from.id, to1.id);
+      var newId = null;
+      while (newId === null || magic.getBucketIndex(from.id, newId) !== index)
+        newId = utils.generateId();
+      to2.id = newId;
+      expect(magic.getBucketIndex(from.id, to2.id)).to.equal(index);
+      from.router.updateContactP(to1);
+      from.router.updateContactP(to2);
+      expect(_.includes(from.router._buckets[index].map(e => e.id), to1.id))
+      expect(_.includes(from.router._buckets[index].map(e => e.id), to2.id))
+      done()
+    });
+  });
   
-  it('#getNearestNodes', (done) => {
-    internals.nodes[0].router.updateContactP(internals.nodes[1].asContact());
-    internals.nodes[0].router.getNearestNodesP(internals.nodes[1].id).then(() => { done() });
+  it('#getNearestContacts', (done) => {
+    const BaseNode = internals.nodes[0];
+    const nodes = _.slice(internals.nodes, 1, internals.nodes.length);
+    
+    nodes.forEach(node => {
+      BaseNode.router.updateContactP(node.asContact());
+    });
+    
+    const contacts = BaseNode.router._getNearestContacts(nodes[0].id, constants.ALPHA, BaseNode.id);
+    const index = magic.getBucketIndex(BaseNode.id, nodes[0].id);
+    
+    expect(contacts.length === constants.ALPHA);
+    
+    contacts.forEach(contact => {
+      expect(contact.id != nodes[0].id);
+    });
+    
+    var distance = nodes.map(node => ({ id: node.id, distance: magic.getDistance(nodes[0].id, node.id) }));
+    //_.sorted(distance, e => e.distance);
+    
+    distance.sort(function sortKeysByDistance(a, b) {
+        return magic.compareKeys(a.distance, b.distance);
+    });
+    
+    distance = distance.splice(1, 3);
+    
+    distance.forEach(e => expect(_.includes(contacts, e)));
+    
+    //console.log(distance);
+    
+    //console.log(contacts);
+    
+    done();
+    
+    //internals.nodes[0].router.updateContactP(internals.nodes[1].asContact());
+    //internals.nodes[0].router.getNearestNodesP(internals.nodes[1].id).then(() => { done() });
   });
 });

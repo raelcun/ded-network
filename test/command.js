@@ -203,7 +203,6 @@ describe('Command', () => {
     const encrypted = Command.encryptAndSign(command, destKeyPair.public, sourceKeyPair.private);
     const decrypted = Command.decrypt(encrypted, destKeyPair.private);
     const verified = Command.verify(decrypted, sourceKeyPair.public);
-    const wrongVerify = Command.verify(decrypted, destKeyPair.public);
     expect(verified).to.equal(true);
     done();
   });

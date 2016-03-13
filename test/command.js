@@ -3,6 +3,7 @@
 const expect = require('chai').expect,
       Contact = require('../lib/contact'),
       Command = require('../lib/command'),
+      crypto = require('../lib/crypto'),
       _ = require('lodash'),
       faker = require('faker'),
       utils = require('../lib/utils');
@@ -138,4 +139,73 @@ describe('Command', () => {
     expect(response.payload.publicKey).to.equal(key);
     done();
   });
+  
+  it('#encryptAndSign', done => {
+    const sourceKeyPair = crypto.generateKeyPair();
+    const destKeyPair = crypto.generateKeyPair();
+    const command = {
+      id: 1,
+      destination: {
+        ip: '127.0.0.1',
+        port: '7001'
+      },
+      command: 'MESSAGE',
+      payload: { message: 'test message'}
+    };
+    const encrypted = Command.encryptAndSign(command, destKeyPair.public, sourceKeyPair.private);
+    expect(encrypted.payload).to.be.a('string');
+    expect(encrypted.aesParams).to.be.a('string');
+    expect(encrypted.signature).to.be.a('string');
+    done();
+  });
+  
+  it('#decrypt', done => {
+    const sourceKeyPair = crypto.generateKeyPair();
+    const destKeyPair = crypto.generateKeyPair();
+    const command = {
+      id: 1,
+      destination: {
+        ip: '127.0.0.1',
+        port: '7001'
+      },
+      command: 'MESSAGE',
+      payload: { 
+        message: 'test message',
+        sourceId: 1,
+        sourceIP: '127.0.0.1',
+        sourcePort: '7000'
+      }
+    };
+    const encrypted = Command.encryptAndSign(command, destKeyPair.public, sourceKeyPair.private);
+    const decrypted = Command.decrypt(encrypted, destKeyPair.private);
+    expect(decrypted.payload).to.be.a('object');
+    expect(decrypted.aesParams).to.be.a('object');
+    done();
+  });
+  
+  it('#verify', done => {
+    const sourceKeyPair = crypto.generateKeyPair();
+    const destKeyPair = crypto.generateKeyPair();
+    const command = {
+      id: 1,
+      destination: {
+        ip: '127.0.0.1',
+        port: '7001'
+      },
+      command: 'MESSAGE',
+      payload: { 
+        message: 'test message',
+        sourceId: 1,
+        sourceIP: '127.0.0.1',
+        sourcePort: '7000'
+      }
+    };
+    const encrypted = Command.encryptAndSign(command, destKeyPair.public, sourceKeyPair.private);
+    const decrypted = Command.decrypt(encrypted, destKeyPair.private);
+    const verified = Command.verify(decrypted, sourceKeyPair.public);
+    const wrongVerify = Command.verify(decrypted, destKeyPair.public);
+    expect(verified).to.equal(true);
+    done();
+  });
+  
 });

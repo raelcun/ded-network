@@ -67,11 +67,7 @@ describe('Integration', () => {
         })
       });
       p.then(() => { 
-        
-        console.log(BaseNode.router._buckets);
-        
         done();
-        
       })
     });
   });

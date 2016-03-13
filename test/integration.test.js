@@ -15,7 +15,7 @@ internals.nodes = [];
 
 describe('Integration', () => {
   before(done => {
-    Promise.all(nodeOpts.map(opt => Node(opt))).then(nodes => {
+    Promise.all(nodeOpts.map((opt, i) => Node(i.toString(), opt))).then(nodes => {
       internals.nodes = nodes;
       done();
     });

@@ -9,7 +9,7 @@ const expect = require('chai').expect,
       utils = require('../lib/utils');
 
 const contacts = _.range(3).map(e => Contact({
-    id: utils.generateId(),
+    id: utils.generateId(e.toString()),
     ip: faker.internet.ip(),
     port: utils.getRandomRange(1000, 5000)
   }));
@@ -34,7 +34,7 @@ describe('Command', () => {
     });
 
     it('should override id', done => {
-      const id = utils.generateId();
+      const id = utils.generateId('94328');
       const source = contacts[0];
       const dest = contacts[1];
       const strCommand = 'my command';

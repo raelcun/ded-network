@@ -9,7 +9,7 @@ const expect = require('chai').expect,
       constants = require('../lib/constants'),
       utils = require('../lib/utils');
 
-const numNodes = 10;
+const numNodes = 20;
 const logger = Logger({ minLevel: 4 });
 
 const nodeOpts = _.range(numNodes).map(e => ({
@@ -25,7 +25,7 @@ internals.nodes = [];
 
 describe('router', () => {
   before(done => {
-    Promise.all(nodeOpts.map(opt => Node(opt))).then(nodes => {
+    Promise.all(nodeOpts.map((opt, i) => Node(i.toString(), opt))).then(nodes => {
       internals.nodes = nodes;
       done();
     });
@@ -57,7 +57,7 @@ describe('router', () => {
       const index = magic.getBucketIndex(from.id, to1.id);
       var newId = null;
       while (newId === null || magic.getBucketIndex(from.id, newId) !== index)
-        newId = utils.generateId();
+        newId = utils.generateId(utils.getRandomRange(1, 1000000).toString());
       to2.id = newId;
       expect(magic.getBucketIndex(from.id, to2.id)).to.equal(index);
       from.router.updateContactP(to1);

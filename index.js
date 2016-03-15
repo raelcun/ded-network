@@ -4,27 +4,28 @@ const Node = require('./lib/node'),
       constants = require('./lib/constants'),
       rack = require('hat').rack(constants.B),
       magic = require('./lib/magic'),
-			_ = require('lodash');
+			_ = require('lodash'),
+			Logger = require('./lib/logger');
 
-const id = magic.getRandomInBucketRangeBuffer(140);
+const numNodes = 10;
+const debug = true;
+const logger = Logger({ minLevel: debug ? 0 : 4, maxLevel: 1 });
+const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });
 
-/*
-const numNodes = 2;
-const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e } });
-console.log(nodeOpts);
-const nodesP = nodeOpts.map(opt => Node(opt));
+const internals = {};
 
-Promise.all(nodesP).then(nodes => {
-  nodes[0].sendMessage(nodes[1], 'hello').then(result => console.log('find result', result));
-  // nodes[0].find(nodes[1]).then(result => {
-  //   console.log('find response', result);
-  // });
-});
-*/
-const numNodes = 2;
-const nodeOpts = [{id: '6bb852acbce77aa6bf09a36a81c45f358e3207bc', ip: '127.0.0.1', port: 3100}, {id: '0888b900099c87050ee5aa3efb253b830fdee8b9', ip: '127.0.0.1', port: 3101}]
-const nodesP = nodeOpts.map(opt => Node(opt));
+Promise.all(nodeOpts.map(opt => Node(opt))).then(nodes => {
+	internals.nodes = nodes;
+  var BaseNode = internals.nodes[0];
+	var nodes = _.slice(internals.nodes, 1, internals.nodes.length);
 
-Promise.all(nodesP).then(nodes => {
-  nodes.forEach(e => e.close(() => console.log('closed')));
+	var p = Promise.resolve();
+	nodes.forEach(node => {
+	  p = p.then(() => {
+	    return node.connect(BaseNode);
+	  });
+	});
+	p.then(() => { 
+	  console.log('test')
+	})
 });

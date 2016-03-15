@@ -9,7 +9,7 @@ const expect = require('chai').expect,
       constants = require('../lib/constants'),
       utils = require('../lib/utils');
 
-const numNodes = 50;
+const numNodes = 10;
 const logger = Logger({ minLevel: 4 });
 
 const nodeOpts = _.range(numNodes).map(e => ({
@@ -21,12 +21,18 @@ const nodeOpts = _.range(numNodes).map(e => ({
 
 
 const internals = {};
-internals.nodes = [];
 
 describe('router', () => {
-  before(done => {
+  beforeEach(done => {
+    internals.nodes = [];
     Promise.all(nodeOpts.map(opt => Node(opt))).then(nodes => {
       internals.nodes = nodes;
+      done();
+    });
+  });
+
+  afterEach(done => {
+    Promise.all(internals.nodes.map(e => e.close())).then(() => {
       done();
     });
   });
@@ -99,7 +105,7 @@ describe('router', () => {
     done();
   });
 
-  it('#refreshBucketsBeyondClosest', (done) =>{
+  it('#refreshBucketsBeyondClosest', (done) => {
     const BaseNode = internals.nodes[0];
     const nodes = _.slice(internals.nodes, 1, internals.nodes.length);
     var p = Promise.resolve();
@@ -115,10 +121,10 @@ describe('router', () => {
     }
 
     nodes.forEach(node => {
-      p = p.then(() => connect(node, BaseNode)).then(result => expect(result === true));
+      p = p.then(() => connect(node, BaseNode)).catch(err => ('DAAAANNNNN!!!!!')).then(result => expect(result === true));
     });
     
-    p = p.then(() => {
+    p = p.catch(err => done(err)).then(() => {
       done();
     });
   });

@@ -9,7 +9,7 @@ const expect = require('chai').expect,
       constants = require('../lib/constants'),
       utils = require('../lib/utils');
 
-const numNodes = 10;
+const numNodes = 50;
 const logger = Logger({ minLevel: 4 });
 
 const nodeOpts = _.range(numNodes).map(e => ({
@@ -95,14 +95,31 @@ describe('router', () => {
     distance = distance.splice(1, 3);
     
     distance.forEach(e => expect(_.includes(contacts, e)));
-    
-    //console.log(distance);
-    
-    //console.log(contacts);
-    
+
     done();
+  });
+
+  it('#refreshBucketsBeyondClosest', (done) =>{
+    const BaseNode = internals.nodes[0];
+    const nodes = _.slice(internals.nodes, 1, internals.nodes.length);
+    var p = Promise.resolve();
+
+    const connect = (newNode, node) => {
+      return Promise.resolve()
+        .then(() => newNode.router.updateContactP(node.asContact()))
+        .then(() => newNode.router.getNearestNodesP(node.id))
+        .then(result => {
+          newNode.router.refreshBucketsBeyondClosestP(result);
+          return true;
+        });
+    }
+
+    nodes.forEach(node => {
+      p = p.then(() => connect(node, BaseNode)).then(result => expect(result === true));
+    });
     
-    //internals.nodes[0].router.updateContactP(internals.nodes[1].asContact());
-    //internals.nodes[0].router.getNearestNodesP(internals.nodes[1].id).then(() => { done() });
+    p = p.then(() => {
+      done();
+    });
   });
 });

@@ -5,9 +5,9 @@ const expect = require('chai').expect,
       _ = require('lodash'),
       Logger = require('../lib/logger');
      
-const numNodes = 2;
-const debug = true;
-const logger = Logger({ minLevel: debug ? 3 : 4, maxLevel: 4 });
+const numNodes = 10;
+const debug = false;
+const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 4 });
 const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });
 
 const internals = {};
@@ -51,20 +51,15 @@ describe('Integration', () => {
   });
   
   describe('Connect', () => {
-    it('connect once', (done) => {
-      var BaseNode = internals.nodes[0];
-      var nodes = _.slice(internals.nodes, 1, internals.nodes.length);
-      nodes[nodes.length - 1].connect(BaseNode).then(() => { done() });
-    });
-    
     it('#connect', (done) => {
       var BaseNode = internals.nodes[0];
       var nodes = _.slice(internals.nodes, 1, internals.nodes.length);
+
       var p = Promise.resolve();
-      nodes.forEach(e => {
+      nodes.forEach(node => {
         p = p.then(() => {
-          return e.connect(BaseNode)
-        })
+          return node.connect(BaseNode);
+        });
       });
       p.then(() => { 
         done();

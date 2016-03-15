@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/raelcun/ded-network#readme",
   "dependencies": {
+    "bluebird": "^3.3.4",
     "chalk": "^1.1.1",
     "hat": "0.0.3",
     "lodash": "^4.5.0",

@@ -89,7 +89,6 @@ describe('Crypto', () => {
   describe('#decryptAndVerify', () => {
 
     it('should decrypt data and verify signature', () => {
-    	logger.warn('test1', 'test2')
       const data = 'super secret data';
       const source_kp = crypto.generateKeyPair();
       const dest_kp = crypto.generateKeyPair();

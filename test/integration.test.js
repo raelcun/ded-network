@@ -11,21 +11,19 @@ const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 4 });
 const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });
 
 const internals = {};
+internals.nodes = [];
 
 describe('Integration', () => {
-  
-  beforeEach(done => {
-    internals.nodes = [];
+  before(done => {
     Promise.all(nodeOpts.map((opt, i) => Node(i.toString(), opt))).then(nodes => {
       internals.nodes = nodes;
       done();
     });
   });
-
-  afterEach(done => {
-    Promise.all(internals.nodes.map(e => e.close())).then(() => {
-      done();
-    });
+  
+  after(done => {
+    internals.nodes.forEach(e => e.close());
+    done();
   });
   
   describe('Node', () => {
@@ -56,14 +54,14 @@ describe('Integration', () => {
     it('#connect', (done) => {
       var BaseNode = internals.nodes[0];
       var nodes = _.slice(internals.nodes, 1, internals.nodes.length);
-
       var p = Promise.resolve();
-      nodes.forEach(node => {
+      nodes.forEach(e => {
         p = p.then(() => {
-          return node.connect(BaseNode);
-        });
+          return e.connect(BaseNode)
+        })
       });
-      p.then(() => { 
+      p.then((result) => {
+        expect(result === true);
         done();
       })
     });

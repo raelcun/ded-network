@@ -9,16 +9,14 @@ const expect = require('chai').expect,
       constants = require('../lib/constants'),
       utils = require('../lib/utils');
 
-const numNodes = 50;
-const logger = Logger({ minLevel: 4 });
+const numNodes = 10;
+const logger = Logger({ minLevel: 1 });
 
 const nodeOpts = _.range(numNodes).map(e => ({
   ip: '127.0.0.1',
   port: 4000 + e,
   logger: logger
 }))
-
-
 
 const internals = {};
 
@@ -92,7 +90,6 @@ describe('router', () => {
     });
     
     var distance = nodes.map(node => ({ id: node.id, distance: magic.getDistance(nodes[0].id, node.id) }));
-    //_.sorted(distance, e => e.distance);
     
     distance.sort(function sortKeysByDistance(a, b) {
         return magic.compareKeys(a.distance, b.distance);
@@ -121,10 +118,10 @@ describe('router', () => {
     }
 
     nodes.forEach(node => {
-      p = p.then(() => connect(node, BaseNode)).catch(err => ('DAAAANNNNN!!!!!')).then(result => expect(result === true));
+      p = p.then(() => connect(node, BaseNode)).then(result => expect(result === true));
     });
     
-    p = p.catch(err => done(err)).then(() => {
+    p = p.then(() => {
       done();
     });
   });

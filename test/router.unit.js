@@ -9,7 +9,7 @@ const expect = require('chai').expect,
       constants = require('../lib/constants'),
       utils = require('../lib/utils');
 
-const numNodes = 20;
+const numNodes = 50;
 const logger = Logger({ minLevel: 4 });
 
 const nodeOpts = _.range(numNodes).map(e => ({

@@ -29,7 +29,9 @@ describe('Command', () => {
       expect(command.destination.port).to.equal(dest.port);
       expect(command.command).to.equal(strCommand);
       expect(command.payload).to.be.an('object');
-      expect(command.payload).to.deep.equal(payload);
+      expect(command.payload.sourceId).to.equal(source.id);
+      expect(command.payload.sourceIP).to.equal(source.ip);
+      expect(command.payload.sourcePort).to.equal(source.port);
       done();
     });
 
@@ -48,7 +50,9 @@ describe('Command', () => {
       expect(command.destination.port).to.equal(dest.port);
       expect(command.command).to.equal(strCommand);
       expect(command.payload).to.be.an('object');
-      expect(command.payload).to.deep.equal(payload);
+      expect(command.payload.sourceId).to.equal(source.id);
+      expect(command.payload.sourceIP).to.equal(source.ip);
+      expect(command.payload.sourcePort).to.equal(source.port);
       done();
     });
   });

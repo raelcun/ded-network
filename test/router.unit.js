@@ -10,7 +10,8 @@ const expect = require('chai').expect,
       utils = require('../lib/utils');
 
 const numNodes = 10;
-const logger = Logger({ minLevel: 4 });
+const debug = false;
+const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 4 });
 
 const nodeOpts = _.range(numNodes).map(e => ({
   ip: '127.0.0.1',

@@ -11,7 +11,7 @@ const expect = require('chai').expect,
 
 const numNodes = 10;
 const debug = false;
-const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 4 });
+const logger = Logger({ minLevel: debug ? 1 : 3, maxLevel: 4 });
 
 const nodeOpts = _.range(numNodes).map(e => ({
   ip: '127.0.0.1',
@@ -126,4 +126,27 @@ describe('router', () => {
       done();
     });
   });
+  
+  it('#findPublicKey', done => {
+    var source = internals.nodes[0];
+    var nodes = _.slice(internals.nodes, 1, internals.nodes.length);
+    var p = Promise.resolve();
+    nodes.forEach(e => {
+      p = p.then(() => {
+        return e.connect(source)
+      })
+    });
+    p.then(() => {
+      const findKey = source.findPublicKeyP('9');
+      findKey.then(result => {
+        console.log('result', result);
+        expect(result).to.be.a('string');
+        expect(result).to.equal(internals.nodes[9].publicKey);
+        done();
+      }).catch(error => {
+        done(error);
+      });
+    });
+  });
+  
 });

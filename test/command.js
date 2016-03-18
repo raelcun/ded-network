@@ -129,7 +129,7 @@ describe('Command', () => {
     done();
   });
 
-  it('#createMessageRes', done => {
+  it('#createFindRes', done => {
     const source = contacts[0];
     const dest = contacts[1];
     const key = 'my public key';
@@ -141,6 +141,37 @@ describe('Command', () => {
     expect(response.payload.destinationId).to.equal(source.id);
     expect(response.payload.publicKey).to.be.a('string');
     expect(response.payload.publicKey).to.equal(key);
+    done();
+  });
+  
+  it('#createPubKeyReq', done => {
+    const source = contacts[0];
+    const dest = contacts[1];
+    const state = { destinationId: '1', visited: [] };
+    const request = Command.createPubKeyReq(source, dest, state);
+    expect(request.payload.sourceId).to.be.a('string');
+    expect(request.payload.sourceId).to.equal(source.id);
+    expect(request.payload.sourceIP).to.be.a('string');
+    expect(request.payload.sourceIP).to.equal(source.ip);
+    expect(request.payload.sourcePort).to.be.a('number');
+    expect(request.payload.sourcePort).to.equal(source.port);
+    expect(request.payload.state).to.be.a('object');
+    expect(request.payload.state).to.equal(state);
+    done();
+  });
+
+  it('#createPubKeyRes', done => {
+    const source = contacts[0];
+    const dest = contacts[1];
+    const username = '2';
+    const request = Command.createPubKeyReq(source, dest, username);
+    const requestedKey = '2 public key';
+    const response = Command.createPubKeyRes(request, dest, requestedKey);
+    expect(response.payload.sourceId).to.be.a('string');
+    expect(response.payload.sourceId).to.equal(dest.id);
+    expect(response.payload.destinationId).to.be.a('string');
+    expect(response.payload.destinationId).to.equal(source.id);
+    expect(response.payload.requestedKey).to.equal(requestedKey);
     done();
   });
   

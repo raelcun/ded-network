@@ -5,7 +5,7 @@ const expect = require('chai').expect,
       _ = require('lodash'),
       Logger = require('../lib/logger');
      
-const numNodes = 50;
+const numNodes = 10;
 const debug = false;
 const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 4 });
 const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });

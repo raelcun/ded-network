@@ -9,7 +9,7 @@ const expect = require('chai').expect,
       constants = require('../lib/constants'),
       utils = require('../lib/utils');
 
-const numNodes = 10;
+const numNodes = 50;
 const debug = false;
 const logger = Logger({ minLevel: debug ? 1 : 3, maxLevel: 4 });
 

@@ -14,7 +14,7 @@ const serverSrc = ['**/*.js', '!node_modules/**/*']
 gulp.task('test', ['build'], () => {
 	return gulp
 		.src(serverTests)
-		.pipe(mocha({ timeout: 100000, grep: yargs.argv.grep }));
+		.pipe(mocha({ timeout: 50000, grep: yargs.argv.grep }));
 });
 
 gulp.task('clean', (cb) => {

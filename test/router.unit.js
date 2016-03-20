@@ -140,7 +140,6 @@ describe('router', () => {
     p.then(() => {
       const findKey = source.findPublicKeyP('9');
       findKey.then(result => {
-        console.log('result', result);
         expect(result).to.be.a('string');
         expect(result).to.equal(internals.nodes[9].publicKey);
         done();

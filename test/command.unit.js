@@ -72,17 +72,17 @@ describe('Command', () => {
     done();
   });
 
-  it('#createPingRes', done => {
-    const source = contacts[0];
-    const dest = contacts[1];
-    const request = Command.createPingReq(source, dest);
-    const response = Command.createPingRes(request, dest);
-    expect(response.payload.sourceId).to.be.a('string');
-    expect(response.payload.sourceId).to.equal(dest.id);
-    expect(response.payload.destinationId).to.be.a('string');
-    expect(response.payload.destinationId).to.equal(source.id);
-    done();
-  });
+  // it('#createPingRes', done => {
+  //   const source = contacts[0];
+  //   const dest = contacts[1];
+  //   const request = Command.createPingReq(source, dest);
+  //   const response = Command.createPingRes(request, dest);
+  //   expect(response.payload.sourceId).to.be.a('string');
+  //   expect(response.payload.sourceId).to.equal(dest.id);
+  //   expect(response.payload.destinationId).to.be.a('string');
+  //   expect(response.payload.destinationId).to.equal(source.id);
+  //   done();
+  // });
 
   it('#createMessageReq', done => {
     const source = contacts[0];
@@ -100,18 +100,18 @@ describe('Command', () => {
     done();
   });
 
-  it('#createMessageRes', done => {
-    const source = contacts[0];
-    const dest = contacts[1];
-    const message = 'test message';
-    const request = Command.createMessageReq(source, dest, message);
-    const response = Command.createMessageRes(request, dest);
-    expect(response.payload.sourceId).to.be.a('string');
-    expect(response.payload.sourceId).to.equal(dest.id);
-    expect(response.payload.destinationId).to.be.a('string');
-    expect(response.payload.destinationId).to.equal(source.id);
-    done();
-  });
+  // it('#createMessageRes', done => {
+  //   const source = contacts[0];
+  //   const dest = contacts[1];
+  //   const message = 'test message';
+  //   const request = Command.createMessageReq(source, dest, message);
+  //   const response = Command.createMessageRes(request, dest);
+  //   expect(response.payload.sourceId).to.be.a('string');
+  //   expect(response.payload.sourceId).to.equal(dest.id);
+  //   expect(response.payload.destinationId).to.be.a('string');
+  //   expect(response.payload.destinationId).to.equal(source.id);
+  //   done();
+  // });
 
   it('#createFindReq', done => {
     const source = contacts[0];
@@ -129,20 +129,20 @@ describe('Command', () => {
     done();
   });
 
-  it('#createFindRes', done => {
-    const source = contacts[0];
-    const dest = contacts[1];
-    const key = 'my public key';
-    const request = Command.createFindReq(source, dest, key);
-    const response = Command.createFindRes(request, dest);
-    expect(response.payload.sourceId).to.be.a('string');
-    expect(response.payload.sourceId).to.equal(dest.id);
-    expect(response.payload.destinationId).to.be.a('string');
-    expect(response.payload.destinationId).to.equal(source.id);
-    expect(response.payload.publicKey).to.be.a('string');
-    expect(response.payload.publicKey).to.equal(key);
-    done();
-  });
+  // it('#createFindRes', done => {
+  //   const source = contacts[0];
+  //   const dest = contacts[1];
+  //   const key = 'my public key';
+  //   const request = Command.createFindReq(source, dest, key);
+  //   const response = Command.createFindRes(request, dest);
+  //   expect(response.payload.sourceId).to.be.a('string');
+  //   expect(response.payload.sourceId).to.equal(dest.id);
+  //   expect(response.payload.destinationId).to.be.a('string');
+  //   expect(response.payload.destinationId).to.equal(source.id);
+  //   expect(response.payload.publicKey).to.be.a('string');
+  //   expect(response.payload.publicKey).to.equal(key);
+  //   done();
+  // });
   
   it('#createPubKeyReq', done => {
     const source = contacts[0];
@@ -160,20 +160,20 @@ describe('Command', () => {
     done();
   });
 
-  it('#createPubKeyRes', done => {
-    const source = contacts[0];
-    const dest = contacts[1];
-    const username = '2';
-    const request = Command.createPubKeyReq(source, dest, username);
-    const requestedKey = '2 public key';
-    const response = Command.createPubKeyRes(request, dest, requestedKey);
-    expect(response.payload.sourceId).to.be.a('string');
-    expect(response.payload.sourceId).to.equal(dest.id);
-    expect(response.payload.destinationId).to.be.a('string');
-    expect(response.payload.destinationId).to.equal(source.id);
-    expect(response.payload.requestedKey).to.equal(requestedKey);
-    done();
-  });
+  // it('#createPubKeyRes', done => {
+  //   const source = contacts[0];
+  //   const dest = contacts[1];
+  //   const username = '2';
+  //   const request = Command.createPubKeyReq(source, dest, username);
+  //   const requestedKey = '2 public key';
+  //   const response = Command.createPubKeyRes(request, dest, requestedKey);
+  //   expect(response.payload.sourceId).to.be.a('string');
+  //   expect(response.payload.sourceId).to.equal(dest.id);
+  //   expect(response.payload.destinationId).to.be.a('string');
+  //   expect(response.payload.destinationId).to.equal(source.id);
+  //   expect(response.payload.requestedKey).to.equal(requestedKey);
+  //   done();
+  // });
   
   it('#encryptAndSign', done => {
     const sourceKeyPair = crypto.generateKeyPair();

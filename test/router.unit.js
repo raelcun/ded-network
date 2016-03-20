@@ -10,7 +10,7 @@ const expect = require('chai').expect,
       utils = require('../lib/utils'),
       Promise = require('bluebird');
 
-const numNodes = 50;
+const numNodes = 10;
 const debug = false;
 const logger = Logger({ minLevel: debug ? 1 : 3, maxLevel: 4 });
 

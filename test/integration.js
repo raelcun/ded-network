@@ -9,7 +9,7 @@ const expect = require('chai').expect,
 
 Promise.config({ longStackTrace: true })
 
-const numNodes = 10;
+const numNodes = 20;
 const debug = false;
 const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 1 });
 const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });
@@ -24,11 +24,11 @@ describe('Integration', () => {
       done();
     });
   });
-  
+
   after(done => {
     Promise.all(internals.nodes.map(e => e.close())).then(() => done());
   });
-  
+
   describe('Node', () => {
     it('#ping', (done) => {
       internals.nodes[0].ping(internals.nodes[1].asContact()).then(result => {
@@ -36,23 +36,23 @@ describe('Integration', () => {
         done();
       });
     });
-    
+
     it('#message', (done) => {
       internals.nodes[0].sendMessage(internals.nodes[1], 'hello world').then(result => {
         expect(result).to.equal(true);
         done();
       });
     });
-  
+
     it('#find', (done) => {
       internals.nodes[0].find(internals.nodes[1]).then(result => {
         expect(result).to.be.a('string');
         done();
       });
     });
-    
+
   });
-  
+
   describe('Connect', () => {
     it('#connect', (done) => {
       var BaseNode = internals.nodes[0];
@@ -75,13 +75,13 @@ describe('Integration', () => {
             console.log(j, bucket.filter(e => e).map(e => e.username));
           })
         })
-        
+
         // for(let i = 0; i < internals.nodes.length; i++) {
         //   for(let j = 0; j < internals.nodes.length; j++) {
         //     console.log(i, j, parseInt(magic.bufferToHex(magic.getDistance(internals.nodes[i].id, internals.nodes[j].id)), 16))
         //   }
         // }
-        
+
         done();
       })
     });

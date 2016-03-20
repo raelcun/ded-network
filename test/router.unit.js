@@ -10,7 +10,7 @@ const expect = require('chai').expect,
       utils = require('../lib/utils'),
       Promise = require('bluebird');
 
-const numNodes = 10;
+const numNodes = 20;
 const debug = false;
 const logger = Logger({ minLevel: debug ? 1 : 3, maxLevel: 4 });
 
@@ -43,7 +43,7 @@ describe('router', () => {
       const fromIndex = utils.getRandomRange(0, numNodes - 1);
       var toIndex = fromIndex;
       while (fromIndex === toIndex) toIndex = utils.getRandomRange(0, numNodes - 1)
-      
+
       const from = internals.nodes[fromIndex]
       const to = internals.nodes[toIndex]
       const index = magic.getBucketIndex(from.id, to.id)
@@ -51,12 +51,12 @@ describe('router', () => {
       expect(from.router._buckets[index][0].id).to.equal(to.id);
       done();
     });
-    
+
     it('add contact to partially full bucket', done => {
       const fromIndex = utils.getRandomRange(0, numNodes - 1)
       var toIndex = fromIndex;
       while (fromIndex === toIndex) toIndex = utils.getRandomRange(0, numNodes - 1)
-      
+
       const from = internals.nodes[fromIndex];
       const to1 = Contact.fromNode(internals.nodes[toIndex]);
       const to2 = Contact.fromNode(internals.nodes[toIndex]);
@@ -73,32 +73,32 @@ describe('router', () => {
       done()
     });
   });
-  
+
   it('#getNearestContacts', (done) => {
     const BaseNode = internals.nodes[0];
     const nodes = _.slice(internals.nodes, 1, internals.nodes.length);
-    
+
     nodes.forEach(node => {
       BaseNode.router.updateContactP(node.asContact());
     });
-    
+
     const contacts = BaseNode.router._getNearestContacts(nodes[0].id, constants.ALPHA, BaseNode.id);
     const index = magic.getBucketIndex(BaseNode.id, nodes[0].id);
-    
+
     expect(contacts.length === constants.ALPHA);
-    
+
     contacts.forEach(contact => {
       expect(contact.id != nodes[0].id);
     });
-    
+
     var distance = nodes.map(node => ({ id: node.id, distance: magic.getDistance(nodes[0].id, node.id) }));
-    
+
     distance.sort(function sortKeysByDistance(a, b) {
         return magic.compareKeys(a.distance, b.distance);
     });
-    
+
     distance = distance.splice(1, 3);
-    
+
     distance.forEach(e => expect(_.includes(contacts, e)));
 
     done();
@@ -122,12 +122,12 @@ describe('router', () => {
     nodes.forEach(node => {
       p = p.then(() => connect(node, BaseNode)).then(result => expect(result === true));
     });
-    
+
     p = p.then(() => {
       done();
     });
   });
-  
+
   it('#findPublicKey', done => {
     var source = internals.nodes[0];
     var nodes = _.slice(internals.nodes, 1, internals.nodes.length);
@@ -138,15 +138,15 @@ describe('router', () => {
       })
     });
     p.then(() => {
-      const findKey = source.findPublicKeyP('9');
+      const findKey = internals.nodes[2].findPublicKeyP('10');
       findKey.then(result => {
         expect(result).to.be.a('string');
-        expect(result).to.equal(internals.nodes[9].publicKey);
+        expect(result).to.equal(internals.nodes[10].publicKey);
         done();
       }).catch(error => {
         done(error);
       });
     });
   });
-  
+
 });

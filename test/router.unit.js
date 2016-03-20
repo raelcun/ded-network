@@ -7,7 +7,8 @@ const expect = require('chai').expect,
       _ = require('lodash'),
       Logger = require('../lib/logger'),
       constants = require('../lib/constants'),
-      utils = require('../lib/utils');
+      utils = require('../lib/utils'),
+      Promise = require('bluebird');
 
 const numNodes = 50;
 const debug = false;

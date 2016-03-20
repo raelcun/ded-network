@@ -4,10 +4,13 @@ const expect = require('chai').expect,
       Node = require('../lib/node'),
       _ = require('lodash'),
       Logger = require('../lib/logger'),
-      magic = require('../lib/magic');
-     
+      magic = require('../lib/magic'),
+      Promise = require('bluebird');
+
+Promise.config({ longStackTrace: true })
+
 const numNodes = 10;
-const debug = true;
+const debug = false;
 const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 1 });
 const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });
 

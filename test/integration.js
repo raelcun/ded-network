@@ -43,14 +43,6 @@ describe('Integration', () => {
         done();
       });
     });
-
-    it('#find', (done) => {
-      internals.nodes[0].find(internals.nodes[1]).then(result => {
-        expect(result).to.be.a('string');
-        done();
-      });
-    });
-
   });
 
   describe('Connect', () => {

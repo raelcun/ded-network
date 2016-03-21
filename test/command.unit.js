@@ -112,37 +112,6 @@ describe('Command', () => {
   //   expect(response.payload.destinationId).to.equal(source.id);
   //   done();
   // });
-
-  it('#createFindReq', done => {
-    const source = contacts[0];
-    const dest = contacts[1];
-    const key = 'my public key';
-    const request = Command.createFindReq(source, dest, key);
-    expect(request.payload.sourceId).to.be.a('string');
-    expect(request.payload.sourceId).to.equal(source.id);
-    expect(request.payload.sourceIP).to.be.a('string');
-    expect(request.payload.sourceIP).to.equal(source.ip);
-    expect(request.payload.sourcePort).to.be.a('number');
-    expect(request.payload.sourcePort).to.equal(source.port);
-    expect(request.payload.publicKey).to.be.a('string');
-    expect(request.payload.publicKey).to.equal(key);
-    done();
-  });
-
-  // it('#createFindRes', done => {
-  //   const source = contacts[0];
-  //   const dest = contacts[1];
-  //   const key = 'my public key';
-  //   const request = Command.createFindReq(source, dest, key);
-  //   const response = Command.createFindRes(request, dest);
-  //   expect(response.payload.sourceId).to.be.a('string');
-  //   expect(response.payload.sourceId).to.equal(dest.id);
-  //   expect(response.payload.destinationId).to.be.a('string');
-  //   expect(response.payload.destinationId).to.equal(source.id);
-  //   expect(response.payload.publicKey).to.be.a('string');
-  //   expect(response.payload.publicKey).to.equal(key);
-  //   done();
-  // });
   
   it('#createPubKeyReq', done => {
     const source = contacts[0];

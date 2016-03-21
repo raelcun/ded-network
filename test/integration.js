@@ -31,16 +31,21 @@ describe('Integration', () => {
 
   describe('Node', () => {
     it('#ping', (done) => {
-      internals.nodes[0].ping(internals.nodes[1].asContact()).then(result => {
-        expect(result).to.equal(true);
-        done();
+      internals.nodes[0].connect(internals.nodes[1]).then(() => {
+        console.log('connected');
+        internals.nodes[0].ping(internals.nodes[1].asContact()).then(result => {
+          expect(result).to.equal(true);
+          done();
+        });
       });
     });
 
     it('#message', (done) => {
-      internals.nodes[0].sendMessage(internals.nodes[1], 'hello world').then(result => {
-        expect(result).to.equal(true);
-        done();
+      internals.nodes[0].connect(internals.nodes[1]).then(() => {
+        internals.nodes[0].sendMessage(internals.nodes[1], 'hello world').then(result => {
+          expect(result).to.equal(true);
+          done();
+        });
       });
     });
   });

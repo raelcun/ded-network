@@ -17,7 +17,7 @@ internals.nodes = []
 describe('Router', () => {
 	
 	before(async done => {
-		for (let i of _.range(10)) {
+		for (let i of _.range(1000)) {
 			const contact = Contact({
 				id: utils.generateId(i.toString()),
 				username: i.toString(),
@@ -82,7 +82,8 @@ describe('Router', () => {
 				baseNode.router.updateContact(e.contact)
 			})
 			
-			await baseNode.router.lookup(additionalNodes[2].contact.id)
+			const result = await baseNode.router.lookup(additionalNodes[2].contact.id)
+			//console.log(result)
 			
 			done()
 		})

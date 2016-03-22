@@ -7,9 +7,9 @@ const expect = require('chai').expect,
 			magic = require('../lib/magic'),
 			_ = require('lodash')
 
-const debug = true
-const onlyDebug = false
-const logger = Logger({ minLevel: (onlyDebug || debug) ? 1 : 3, maxLevel: onlyDebug ? 1 : 4 })
+const debug = false
+const onlyDebug = true
+const logger = Logger({ minLevel: debug ? 1 : 3, maxLevel: onlyDebug ? 1 : 4 })
 
 const internals = {}
 internals.nodes = []
@@ -73,20 +73,18 @@ describe('Router', () => {
 		})
 	})
 	
-	// describe('#iterativeFind', () => {
-	// 	it('test', async done => {
-	// 		const baseNode = internals.nodes[0]
-	// 		const additionalNodes = _(internals.nodes).drop(1).value()
+	describe('#iterativeFind', () => {
+		it('test', async done => {
+			const baseNode = internals.nodes[0]
+			const additionalNodes = _(internals.nodes).drop(1).value()
 			
-	// 		additionalNodes.forEach(e => {
-	// 			baseNode.router.updateContact(e.contact)
-	// 		})
+			additionalNodes.forEach(e => {
+				baseNode.router.updateContact(e.contact)
+			})
 			
-	// 		console.log('test')
+			await baseNode.router.lookup(additionalNodes[2].contact.id)
 			
-	// 		await baseNode.router.iterativeFind(additionalNodes[2].contact.id)
-			
-	// 		done()
-	// 	})
-	// })
+			done()
+		})
+	})
 })

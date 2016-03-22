@@ -21,7 +21,7 @@ const contacts = _.range(3).map(e => Contact({
 }))
 const rpcs = []
 
-describe('Command', () => {
+describe('RPC', () => {
 	
 	before(async done => {
 		for (let c of contacts)

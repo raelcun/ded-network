@@ -39,13 +39,30 @@ describe('Integration', () => {
         });
       });
     });
+  });
 
-    it('#message', (done) => {
-      internals.nodes[0].connect(internals.nodes[1]).then(() => {
-        internals.nodes[0].sendMessage(internals.nodes[1], 'hello world').then(result => {
+  it('#message', done => {
+    var source = internals.nodes[0];
+    var nodes = _.slice(internals.nodes, 1, internals.nodes.length);
+    var p = Promise.resolve();
+    nodes.forEach(e => {
+      p = p.then(() => {
+        return e.connect(source)
+      })
+    });
+    p.then(() => {
+      const findKey = internals.nodes[2].findPublicKeyP('5');
+      findKey.then(pubKey => {
+        const msg = internals.nodes[2].sendMessage('5', 'hello world', pubKey);
+        msg.then(result => {
+          console.log('message response result', result);
           expect(result).to.equal(true);
           done();
-        });
+        }).catch(error => {
+          done(error);
+        })
+      }).catch(error => {
+        done(error);
       });
     });
   });

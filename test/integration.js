@@ -9,7 +9,7 @@ const expect = require('chai').expect,
 
 Promise.config({ longStackTrace: true })
 
-const numNodes = 20;
+const numNodes = 10;
 const debug = false;
 const logger = Logger({ minLevel: debug ? 1 : 4, maxLevel: 1 });
 const nodeOpts = _.range(numNodes).map(e => { return { ip: '127.0.0.1', port: 3100 + e, logger}; });
@@ -62,22 +62,13 @@ describe('Integration', () => {
       });
       p.then((result) => {
         expect(result === true);
-        console.log(0, _.flatten(BaseNode.router._buckets).filter(e => e).map(e => e.username));
-        // nodes.forEach((node, i) => {
-        //   console.log(i+1, _.flatten(node.router._buckets).filter(e => e).map(e => e.username));
-        // })
+        //console.log(0, _.flatten(BaseNode.router._buckets).filter(e => e).map(e => e.username));
         nodes.forEach((node, i) => {
-            console.log('node', i+1);
+            //console.log('node', i+1);
           node.router._buckets.forEach((bucket, j) => {
-            console.log(j, bucket.filter(e => e).map(e => e.username));
+            //console.log(j, bucket.filter(e => e).map(e => e.username));
           })
         })
-
-        // for(let i = 0; i < internals.nodes.length; i++) {
-        //   for(let j = 0; j < internals.nodes.length; j++) {
-        //     console.log(i, j, parseInt(magic.bufferToHex(magic.getDistance(internals.nodes[i].id, internals.nodes[j].id)), 16))
-        //   }
-        // }
 
         done();
       })

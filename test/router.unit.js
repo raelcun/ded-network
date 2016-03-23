@@ -88,4 +88,23 @@ describe('Router', () => {
 			done()
 		})
 	})
+
+	describe('#connect', () => {
+		it('connect', async done => {
+			const baseNode = internals.nodes[0]
+			const additionalNodes = _(internals.nodes).drop(1).value()
+			
+			for (let i = 0; i < additionalNodes.length; i++) {
+				await additionalNodes[i].router.updateContact(baseNode.contact)
+				await additionalNodes[i].router.lookup({ contactID: additionalNodes[i].contact.id })
+				await additionalNodes[i].router.refreshBucketsBeyondClosest()
+			}
+			
+			internals.nodes.forEach(e => {
+				console.log(e.contact.username, _.flatten(e.router.buckets.filter(b => b !== undefined)).map(c => c.username))
+			})
+			
+			done()
+		})
+	})
 })

@@ -7,7 +7,7 @@ const expect = require('chai').expect,
 			magic = require('../lib/magic'),
 			_ = require('lodash')
 
-const debug = false
+const debug = true
 const onlyDebug = true
 const logger = Logger({ minLevel: debug ? 1 : 3, maxLevel: onlyDebug ? 1 : 4 })
 
@@ -17,7 +17,7 @@ internals.nodes = []
 describe('Router', () => {
 	
 	before(async done => {
-		for (let i of _.range(1000)) {
+		for (let i of _.range(10)) {
 			const contact = Contact({
 				id: utils.generateId(i.toString()),
 				username: i.toString(),

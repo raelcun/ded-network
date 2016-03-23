@@ -96,8 +96,17 @@ describe('Router', () => {
 			
 			for (let i = 0; i < additionalNodes.length; i++) {
 				await additionalNodes[i].router.updateContact(baseNode.contact)
-				await additionalNodes[i].router.lookup({ contactID: additionalNodes[i].contact.id })
-				await additionalNodes[i].router.refreshBucketsBeyondClosest()
+				try {
+					await additionalNodes[i].router.lookup(additionalNodes[i].contact.id)
+				} catch (e) {
+					console.log(e)
+				}
+				console.log('after lookup')
+				try {
+					await additionalNodes[i].router.refreshBucketsBeyondClosest()
+				} catch (e) {
+					console.log(e)
+				}
 			}
 			
 			internals.nodes.forEach(e => {

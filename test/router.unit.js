@@ -94,12 +94,12 @@ describe('Router', () => {
 			baseNode.router.updateContact(e.contact)
 		})
 
-		const result = await baseNode.router.lookup(additionalNodes[2].contact.id)
+		const finalState = await baseNode.router.lookup(additionalNodes[2].contact.id)
 		
-		// TODO: expect something
+		const allContacts = internals.nodes.map(e => e.contact.id).sort()
+		expect(finalState.contactlist.map(e => e.id).sort()).to.deep.equal(allContacts)
+		expect(finalState.contacted.sort()).to.deep.equal(allContacts)
 
 		done()
 	})
-
-	// TODO: lookup test
 })

@@ -82,8 +82,11 @@ describe('Router', () => {
 				baseNode.router.updateContact(e.contact)
 			})
 			
-			const result = await baseNode.router.lookup(additionalNodes[2].contact.id)
-			//console.log(result)
+			try {
+				const result = await baseNode.router.lookup(additionalNodes[2].contact.id)
+			} catch(e) {
+				console.log(e)
+			}
 			
 			done()
 		})
@@ -96,17 +99,8 @@ describe('Router', () => {
 			
 			for (let i = 0; i < additionalNodes.length; i++) {
 				await additionalNodes[i].router.updateContact(baseNode.contact)
-				try {
-					await additionalNodes[i].router.lookup(additionalNodes[i].contact.id)
-				} catch (e) {
-					console.log(e)
-				}
-				console.log('after lookup')
-				try {
-					await additionalNodes[i].router.refreshBucketsBeyondClosest()
-				} catch (e) {
-					console.log(e)
-				}
+				await additionalNodes[i].router.lookup(additionalNodes[i].contact.id)
+				await additionalNodes[i].router.refreshBucketsBeyondClosest()
 			}
 			
 			internals.nodes.forEach(e => {

@@ -20,7 +20,7 @@ internals.nodes = []
 describe('Router', () => {
 
 	before(async done => {
-		for (let i of _.range(19)) {
+		for (let i of _.range(10)) {
 			const contact = Contact({
 				id: utils.generateId(i.toString()),
 				username: i.toString(),
@@ -28,6 +28,9 @@ describe('Router', () => {
 				port: 3000 + i,
 				logger
 			})
+
+			console.log(contact.username, ':', contact.id)
+
 			internals.nodes.push({
 				router: await Router({
 					logger, sourceContact: contact
@@ -108,7 +111,7 @@ describe('Router', () => {
 			for (let i = 0; i < additionalNodes.length; i++) {
 				await additionalNodes[i].router.updateContact(baseNode.contact)
 				await additionalNodes[i].router.lookup(additionalNodes[i].contact.id)
-				await additionalNodes[i].router.refreshBucketsBeyondClosest()
+				//await additionalNodes[i].router.refreshBucketsBeyondClosest()
 			}
 
 			internals.nodes.forEach(e => {

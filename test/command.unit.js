@@ -33,6 +33,7 @@ describe('Command', () => {
 					sourceId: sourceContact.id,
 					sourceIP: sourceContact.ip,
 					sourcePort: sourceContact.port,
+					sourceUsername: sourceContact.username,
 					destId: destContact.id
 				})
 			})
@@ -75,6 +76,7 @@ describe('Command', () => {
 			},
 			strCommand: 'MESSAGE',
 			payload: _.merge({ message: strMessage }, {
+				sourceUsername: sourceContact.username,
 				sourceId: sourceContact.id,
 				sourceIP: sourceContact.ip,
 				sourcePort: sourceContact.port,

@@ -33,7 +33,7 @@ describe('Node', () => {
 
 	it('connect', async done => {
 		const baseNode = internals.nodes[0]
-		const additionalNodes = _.drop(internals.nodes, 1)
+		const additionalNodes = _.take(_.drop(internals.nodes, 1), 19)
 		if (additionalNodes.length < 19) {
 			return done(new Error('not enough nodes to test'))
 		}
@@ -182,7 +182,7 @@ describe('Node', () => {
 		}
 		
 		const actualResults = {}
-		internals.nodes.forEach(e => {
+		_.concat(baseNode, additionalNodes).forEach(e => {
 			const curr = actualResults[e.username] = {}
 			e.router.buckets.forEach((b, i) => {
 				if (b.length > 0) {

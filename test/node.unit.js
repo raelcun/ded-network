@@ -6,7 +6,8 @@ const expect = require('chai').expect,
 			Node = require('../lib/node'),
 			utils = require('../lib/utils'),
 			magic = require('../lib/magic'),
-			_ = require('lodash')
+			_ = require('lodash'),
+			cp = require('child_process')
 
 const debug = false
 const logger = Logger({

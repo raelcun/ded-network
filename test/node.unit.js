@@ -196,3 +196,61 @@ describe('Node', () => {
 		done()
 	})
 })
+
+describe('#childProcess', () => {
+
+	before(async done => {
+		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '127.0.0.1', port: 3000 + e, logger })))
+		internals.nodes.forEach(e => console.log(e.username, e.id))
+		done()
+	})
+
+	after(async done => {
+		await Promise.all(internals.nodes.map(e => e.close()))
+		done()
+	})
+
+	it('spawn child process', async done => {
+
+		const baseNode = internals.nodes[0]
+		const additionalNodes = _(internals.nodes).drop(1).value()
+
+		let baseNodeThread = cp.fork('./dist/lib/child.js')
+		let additionalNodesThreads = []
+
+		baseNodeThread.on('message', (m) => {
+			console.log('Parent got message from', m.node.username)
+			baseNodeThread.disconnect();
+		})
+
+		baseNodeThread.on('error', (err) => {
+			console.log(err)
+		})
+
+		baseNodeThread.send({command: 'create', node: baseNode})
+		
+		for (let i = 0; i < additionalNodes.length; i++){
+			additionalNodesThreads.push(cp.fork('./dist/lib/child.js'))
+
+			additionalNodesThreads[i].on('message', (m) => {
+				console.log('Parent got message from', m.node.username)
+				additionalNodesThreads[i].disconnect()
+			})
+
+			additionalNodesThreads[i].on('error', (err) => {
+				console.log(err)
+			})
+
+			additionalNodesThreads[i].send({command: 'create', node: additionalNodes[i]})
+		}
+
+		for (let i = 0; i < additionalNodes.length; i++){
+
+			additionalNodesThreads[i].send({command: 'connect', contact: baseNode.asContact})
+
+		}
+
+		done()
+
+	})
+})

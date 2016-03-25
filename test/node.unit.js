@@ -15,14 +15,14 @@ const logger = Logger({
 	maxLevel: debug ? 1 : 4
 })
 
-const numNodes = 20
+const numNodes = 50
 const internals = {}
 internals.nodes = []
 
 describe('Node', () => {
 
 	before(async done => {
-		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '127.0.0.1', port: 3000 + e, logger })))
+		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '0.0.0.0', port: 4000 + e, logger })))
 		if (debug) { internals.nodes.forEach(e => console.log(e.username, e.id)) }
 		done()
 	})
@@ -201,13 +201,8 @@ describe('Node', () => {
 describe('#childProcess', () => {
 
 	before(async done => {
-		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '127.0.0.1', port: 3000 + e, logger })))
+		internals.nodes = await Promise.all(_.range(numNodes).map(e => Contact({ username: e.toString(), id: utils.generateId(e.toString()), ip: '127.0.0.1', port: 3000 + e })))
 		internals.nodes.forEach(e => console.log(e.username, e.id))
-		done()
-	})
-
-	after(async done => {
-		await Promise.all(internals.nodes.map(e => e.close()))
 		done()
 	})
 
@@ -218,40 +213,64 @@ describe('#childProcess', () => {
 
 		let baseNodeThread = cp.fork('./dist/lib/child.js')
 		let additionalNodesThreads = []
+		const pendingConnections = {}
 
 		baseNodeThread.on('message', (m) => {
-			console.log('Parent got message from', m.node.username)
-			baseNodeThread.disconnect();
+			if (pendingConnections[m.message.messageID] !== undefined) {
+				pendingConnections[m.message.messageID].resolve(true)
+			}
+			
+			if (m.message.command === 'connect') {
+				console.log('base node received connection response from ' + m.node.username)
+			}
 		})
 
-		baseNodeThread.on('error', (err) => {
-			console.log(err)
-		})
-
-		baseNodeThread.send({command: 'create', node: baseNode})
+		baseNodeThread.on('error', err => console.log('baseNode Thread error', err))
 		
-		for (let i = 0; i < additionalNodes.length; i++){
-			additionalNodesThreads.push(cp.fork('./dist/lib/child.js'))
-
-			additionalNodesThreads[i].on('message', (m) => {
-				console.log('Parent got message from', m.node.username)
-				additionalNodesThreads[i].disconnect()
+		new Promise((resolve, reject) => {
+			const message = {command: 'create', node: baseNode, messageID: utils.generateMessageId()}
+			baseNodeThread.send(message, err => {
+				pendingConnections[message.messageID] = { resolve, reject }
 			})
-
-			additionalNodesThreads[i].on('error', (err) => {
-				console.log(err)
-			})
-
-			additionalNodesThreads[i].send({command: 'create', node: additionalNodes[i]})
-		}
-
-		for (let i = 0; i < additionalNodes.length; i++){
-
-			additionalNodesThreads[i].send({command: 'connect', contact: baseNode.asContact})
-
-		}
-
-		done()
-
+		}).then(() => {
+			console.log('base node created')
+			return true
+		}).then(() => {
+			return Promise.all(additionalNodes.map(e => new Promise((resolve, reject) => {
+				const newThread = cp.fork('./dist/lib/child.js')
+				additionalNodesThreads.push(newThread)
+				
+				newThread.on('message', (m) => {
+					if (pendingConnections[m.message.messageID] !== undefined) {
+						pendingConnections[m.message.messageID].resolve(true)
+					}
+				})
+				newThread.on('error', (err) => { console.log('Thread Error', err) })
+				
+				const message = { command: 'create', node: e, messageID: utils.generateMessageId() }
+				newThread.send(message, err => {
+					pendingConnections[message.messageID] = { resolve, reject }
+				})
+			})))
+		}).then(() => {
+			console.log('all nodes created')
+			return true
+		}).then(() => {
+			return Promise.all(additionalNodes.map((e, i) => new Promise((resolve, reject) => {
+				const message = { command: 'connect', contact: baseNode, messageID: utils.generateMessageId() }
+				additionalNodesThreads[i].send(message, err => {
+					pendingConnections[message.messageID] = { resolve, reject }
+				})
+			})))
+		}).then(() => {
+			console.log('all nodes connected')
+			return true
+		}).then(() => {
+			baseNodeThread.disconnect()
+			additionalNodesThreads.forEach(e => e.disconnect())
+		}).then(() => {
+			console.log('all nodes disconnected')
+			return true
+		}).then(() => done())
 	})
 })

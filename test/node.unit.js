@@ -8,7 +8,7 @@ const expect = require('chai').expect,
 			magic = require('../lib/magic'),
 			_ = require('lodash')
 
-const debug = false
+const debug = true
 const logger = Logger({
 	minLevel: debug ? 0 : 3,
 	maxLevel: debug ? 1 : 4
@@ -22,7 +22,7 @@ describe('Node', () => {
 
 	before(async done => {
 		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '127.0.0.1', port: 3000 + e, logger })))
-		internals.nodes.forEach(e => console.log(e.username, e.id))
+		if (debug) { internals.nodes.forEach(e => console.log(e.username, e.id)) }
 		done()
 	})
 

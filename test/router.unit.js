@@ -29,7 +29,7 @@ describe('Router', () => {
 				port: 3000 + e,
 				logger
 			}))
-		internals.contacts.forEach(e => console.log(e.username, e.id))
+		if (debug) { internals.contacts.forEach(e => console.log(e.username, e.id)) }
 		done()
 	})
 

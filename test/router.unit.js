@@ -86,7 +86,7 @@ describe('Router', () => {
 		done()
 	})
 
-	it('#iterativeFind', async done => {
+	it('#lookup', async done => {
 		const baseNode = internals.nodes[0]
 		const additionalNodes = _(internals.nodes).drop(1).value()
 

@@ -8,7 +8,7 @@ const expect = require('chai').expect,
 			magic = require('../lib/magic'),
 			_ = require('lodash')
 
-const debug = true
+const debug = false
 const logger = Logger({
 	minLevel: debug ? 0 : 3,
 	maxLevel: debug ? 1 : 4

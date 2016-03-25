@@ -6,7 +6,8 @@ const gulp = require('gulp'),
 			babel = require('gulp-babel'),
 			sourcemaps = require('gulp-sourcemaps'),
 			yargs = require('yargs'),
-			insert = require('gulp-insert')
+			insert = require('gulp-insert'),
+			uglify = require('gulp-uglify')
 
 const serverDest = 'dist'
 const serverTests = [serverDest + '/test/*.js']
@@ -28,8 +29,9 @@ gulp.task('build', ['clean'], () => {
 		.pipe(sourcemaps.init())
 		.pipe(babel({
 			presets: ['es2015'],
-			plugins: ['syntax-async-functions', 'transform-async-to-generator']
+			plugins: ['syntax-async-functions', 'transform-async-to-generator', 'transform-object-rest-spread']
 		}))
+		//.pipe(uglify()) // TODO: turn on for production
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(serverDest))
 })

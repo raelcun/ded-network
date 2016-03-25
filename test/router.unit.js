@@ -85,6 +85,36 @@ describe('Router', () => {
 
 		done()
 	})
+	
+	it.skip('#requestPublicKey', async done => {
+		if (numNodes < 7) done(new Error('not enough nodes to run this test'))
+		
+		/* 0 - 1 - 3 - 6
+		 *  \   \   /
+		 *   2   - 4 - 5
+		 */
+
+		const connect = (from, to) => to.forEach(e => internals.nodes[from].router.updateContact(internals.nodes[e].contact))
+		const getConnectedTo = i => _.flatten(internals.nodes[i].router.buckets.filter(e => e.length > 0)).map(e => e.username).sort()
+	
+		
+		connect(0, [1, 2])
+		connect(1, [3, 4])
+		connect(3, [6])
+		connect(4, [5, 6])
+		
+		expect(getConnectedTo(0)).to.deep.equal(['1', '2'])
+		expect(getConnectedTo(1)).to.deep.equal(['3', '4'])
+		expect(getConnectedTo(2)).to.deep.equal([])
+		expect(getConnectedTo(3)).to.deep.equal(['6'])
+		expect(getConnectedTo(4)).to.deep.equal(['5', '6'])
+		expect(getConnectedTo(5)).to.deep.equal([])
+		expect(getConnectedTo(6)).to.deep.equal([])
+		
+		expect(await internals.nodes[0].requestPublicKey(internals.nodes[5].contact.id)).to.equal(internals.nodes[5].contact.publicKey)
+		
+		done()
+	})
 
 	it('#lookup', async done => {
 		const baseNode = internals.nodes[0]

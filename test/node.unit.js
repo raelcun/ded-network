@@ -14,7 +14,7 @@ const logger = Logger({
 	maxLevel: debug ? 1 : 4
 })
 
-const numNodes = 30
+const numNodes = 20
 const internals = {}
 internals.nodes = []
 
@@ -33,12 +33,12 @@ describe('Node', () => {
 
 	it('connect', async done => {
 		const baseNode = internals.nodes[0]
-		const additionalNodes = _.take(_.drop(internals.nodes, 1), 29)
-		if (additionalNodes.length < 29) {
+		const additionalNodes = _.take(_.drop(internals.nodes, 1), 19)
+		if (additionalNodes.length < 19) {
 			return done(new Error('not enough nodes to test'))
 		}
 		
-		for (let i = 0; i < 29; i++) {
+		for (let i = 0; i < 19; i++) {
 			await additionalNodes[i].connect(baseNode.asContact())
 		}
 		
@@ -191,7 +191,7 @@ describe('Node', () => {
 			})
 		})
 		
-		//expect(actualResults).to.deep.equal(expectedResults)
+		expect(actualResults).to.deep.equal(expectedResults)
 		
 		done()
 	})

@@ -28,7 +28,7 @@ gulp.task('build', ['clean'], () => {
 		.pipe(sourcemaps.init())
 		.pipe(babel({
 			presets: ['es2015'],
-			plugins: ['syntax-async-functions','transform-regenerator']
+			plugins: ['syntax-async-functions', 'transform-async-to-generator']
 		}))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(serverDest))

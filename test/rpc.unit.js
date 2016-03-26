@@ -6,12 +6,15 @@ const expect = require('chai').expect,
 			RPC = require('../lib/rpc'),
 			utils = require('../lib/utils'),
 			Logger = require('../lib/logger'),
+			crypto = require('../lib/crypto'),
+			pkStore = require('../lib/pkStore'),
 			faker = require('faker'),
 			_ = require('lodash')
 
 const debug = false
 const onlyDebug = false
 const logger = Logger({ minLevel: (onlyDebug || debug) ? 1 : 3, maxLevel: onlyDebug ? 1 : 4 })
+const kp = crypto.generateKeyPair()
 
 const contacts = _.range(3).map(e => Contact({
 	id: utils.generateId(e.toString()),
@@ -22,19 +25,21 @@ const contacts = _.range(3).map(e => Contact({
 const rpcs = []
 
 describe('RPC', () => {
-	
+
 	before(async done => {
-		for (let c of contacts)
-			rpcs.push(await RPC({ contact: c, logger }))
+		for (let c of contacts){
+			pkStore[c.id] = { publicKey: kp.public, privateKey: kp.private }
+			rpcs.push(await RPC({ contact: c, privateKey: kp.private, logger }))
+		}
 		done()
 	})
-	
+
 	after(done => {
 		for (let r of rpcs)
 			r.close()
 		done()
 	})
-	
+
 	describe('#sendCommand', () => {
 		it('send command', async done => {
 			const [sourceContact, destContact] = contacts
@@ -49,7 +54,7 @@ describe('RPC', () => {
 			destRPC.setHandler(handleCommand)
 			sourceRPC.sendCommand(command)
 		})
-		
+
 		it('receive response', async done => {
 			const [sourceContact, destContact] = contacts
 			const [sourceRPC, destRPC] = rpcs

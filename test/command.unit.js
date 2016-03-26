@@ -1,6 +1,7 @@
 const expect = require('chai').expect,
 			Contact = require('../lib/contact'),
 			Command = require('../lib/command'),
+			crypto = require('../lib/crypto'),
 			utils = require('../lib/utils'),
 			faker = require('faker'),
 			_ = require('lodash')
@@ -37,10 +38,10 @@ describe('Command', () => {
 					destId: destContact.id
 				})
 			})
-			
+
 			done()
 		})
-		
+
 		it('should override id', done => {
 			const id = utils.generateId('abc123')
 			const [sourceContact, destContact] = contacts
@@ -50,7 +51,7 @@ describe('Command', () => {
 			expect(command.id).to.equal(id)
 			done()
 		})
-		
+
 		it('should default id', done => {
 			const [sourceContact, destContact] = contacts
 			const strCommand = 'myCommand'
@@ -60,7 +61,7 @@ describe('Command', () => {
 			done()
 		})
 	})
-	
+
 	it('#createMessageReq', done => {
 		const [sourceContact, destContact] = contacts
 		const strMessage = 'test message'
@@ -85,4 +86,72 @@ describe('Command', () => {
 		})
 		done()
 	})
+
+  it('#encryptAndSign', done => {
+    const sourceKeyPair = crypto.generateKeyPair();
+    const destKeyPair = crypto.generateKeyPair();
+    const command = {
+      id: 1,
+      destination: {
+        ip: '127.0.0.1',
+        port: '7001'
+      },
+      command: 'MESSAGE',
+      payload: { message: 'test message'}
+    };
+    const encrypted = Command.encrypt(command, sourceKeyPair.private, destKeyPair.public);
+    expect(encrypted.payload).to.be.a('string');
+    expect(encrypted.aesParams).to.be.a('string');
+    expect(encrypted.signature).to.be.a('string');
+    done();
+  });
+
+  it('#decrypt', done => {
+    const sourceKeyPair = crypto.generateKeyPair();
+    const destKeyPair = crypto.generateKeyPair();
+    const command = {
+      id: 1,
+      destination: {
+        ip: '127.0.0.1',
+        port: '7001'
+      },
+      command: 'MESSAGE',
+      payload: {
+        message: 'test message',
+        sourceId: 1,
+        sourceIP: '127.0.0.1',
+        sourcePort: '7000'
+      }
+    };
+    const encrypted = Command.encrypt(command, sourceKeyPair.private, destKeyPair.public);
+    const decrypted = Command.decrypt(encrypted, destKeyPair.private);
+    expect(decrypted.payload).to.be.a('object');
+    expect(decrypted.aesParams).to.be.a('object');
+    done();
+  });
+
+  it('#verify', done => {
+    const sourceKeyPair = crypto.generateKeyPair();
+    const destKeyPair = crypto.generateKeyPair();
+    const command = {
+      id: 1,
+      destination: {
+        ip: '127.0.0.1',
+        port: '7001'
+      },
+      command: 'MESSAGE',
+      payload: {
+        message: 'test message',
+        sourceId: 1,
+        sourceIP: '127.0.0.1',
+        sourcePort: '7000'
+      }
+    };
+    const encrypted = Command.encrypt(command, sourceKeyPair.private, destKeyPair.public);
+    const decrypted = Command.decrypt(encrypted, destKeyPair.private);
+    const verified = Command.verify(decrypted, sourceKeyPair.public);
+    expect(verified).to.equal(true);
+    done();
+  });
+
 })

@@ -37,11 +37,11 @@ describe('Node', () => {
 		if (additionalNodes.length < 19) {
 			return done(new Error('not enough nodes to test'))
 		}
-		
+
 		for (let i = 0; i < 19; i++) {
 			await additionalNodes[i].connect(baseNode.asContact())
 		}
-		
+
 		const expectedResults = {
 			'0': {
 				'154': [ '19', '10' ],
@@ -67,7 +67,7 @@ describe('Node', () => {
 				'158': [ '17', '11', '4', '1', '9', '16' ],
 				'159': [ '5', '19', '0', '8', '6', '2', '13', '18', '7', '10', '14', '15' ]
 			},
-			
+
 			'4': {
 				'155': [ '16', '11' ],
 				'156': [ '17', '9' ],
@@ -180,7 +180,7 @@ describe('Node', () => {
 				'159': [ '12', '9', '4', '11', '1', '16', '17', '3' ]
 			}
 		}
-		
+
 		const actualResults = {}
 		_.concat(baseNode, additionalNodes).forEach(e => {
 			const curr = actualResults[e.username] = {}
@@ -190,9 +190,9 @@ describe('Node', () => {
 				}
 			})
 		})
-		
+
 		expect(actualResults).to.deep.equal(expectedResults)
-		
+
 		done()
 	})
 })

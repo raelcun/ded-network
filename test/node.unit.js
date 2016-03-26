@@ -6,7 +6,9 @@ const expect = require('chai').expect,
 			Node = require('../lib/node'),
 			utils = require('../lib/utils'),
 			magic = require('../lib/magic'),
-			_ = require('lodash')
+			crypto = require('../lib/crypto'),
+			_ = require('lodash'),
+			cp = require('child_process')
 
 const debug = false
 const logger = Logger({
@@ -21,7 +23,7 @@ internals.nodes = []
 describe('Node', () => {
 
 	before(async done => {
-		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '127.0.0.1', port: 3000 + e, logger })))
+		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '0.0.0.0', port: 4000 + e, logger })))
 		if (debug) { internals.nodes.forEach(e => console.log(e.username, e.id)) }
 		done()
 	})
@@ -38,6 +40,7 @@ describe('Node', () => {
 			return done(new Error('not enough nodes to test'))
 		}
 
+		console.log(baseNode.asContact())
 		for (let i = 0; i < 19; i++) {
 			await additionalNodes[i].connect(baseNode.asContact())
 		}
@@ -194,5 +197,91 @@ describe('Node', () => {
 		expect(actualResults).to.deep.equal(expectedResults)
 
 		done()
+	})
+})
+
+describe('#childProcess', () => {
+
+	before(async done => {
+		internals.nodes = _.range(numNodes).map(e => {
+			const keyPair = crypto.generateKeyPair()
+			return Contact({ username: e.toString(), id: utils.generateId(e.toString()), ip: '0.0.0.0', port: 4000 + e, publicKey: keyPair.publicKey })
+		})
+		internals.nodes.forEach(e => console.log(e.username, e.id))
+		done()
+	})
+
+	it.skip('spawn child process', async done => {
+
+		const baseNode = internals.nodes[0]
+		const additionalNodes = _(internals.nodes).drop(1).value()
+
+		let baseNodeThread = cp.fork('./dist/lib/child.js')
+		let additionalNodesThreads = []
+		const pendingConnections = {}
+
+		baseNodeThread.on('message', (m) => {
+			if (pendingConnections[m.message.messageID] !== undefined) {
+				pendingConnections[m.message.messageID].resolve(true)
+			}
+			
+			if (m.message.command === 'create'){
+				baseNode.publicKey = m.node.publicKey
+			}else if (m.message.command === 'connect') {
+				console.log('base node received connection response from ' + m.node.username)
+			}
+		})
+
+		baseNodeThread.on('error', err => console.log('baseNode Thread error', err))
+		
+		new Promise((resolve, reject) => {
+			const message = {command: 'create', node: baseNode, messageID: utils.generateMessageId()}
+			baseNodeThread.send(message, err => {
+				pendingConnections[message.messageID] = { resolve, reject }
+			})
+		}).then(() => {
+			console.log('base node created')
+			return true
+		}).then(() => {
+			return Promise.all(additionalNodes.map(e => new Promise((resolve, reject) => {
+				const newThread = cp.fork('./dist/lib/child.js')
+				additionalNodesThreads.push(newThread)
+				
+				newThread.on('message', (m) => {
+					if (pendingConnections[m.message.messageID] !== undefined) {
+						pendingConnections[m.message.messageID].resolve(true)
+					}
+
+					if (m.message.command === 'create'){
+						e.publicKey = m.node.publicKey
+					}
+				})
+				newThread.on('error', (err) => { console.log('Thread Error', err) })
+				
+				const message = { command: 'create', node: e, messageID: utils.generateMessageId() }
+				newThread.send(message, err => {
+					pendingConnections[message.messageID] = { resolve, reject }
+				})
+			})))
+		}).then(() => {
+			console.log('all nodes created')
+			return true
+		}).then(() => {
+			return Promise.all(additionalNodes.map((e, i) => new Promise((resolve, reject) => {
+				const message = { command: 'connect', contact: baseNode, messageID: utils.generateMessageId() }
+				additionalNodesThreads[i].send(message, err => {
+					pendingConnections[message.messageID] = { resolve, reject }
+				})
+			})))
+		}).then(() => {
+			console.log('all nodes connected')
+			return true
+		}).then(() => {
+			baseNodeThread.disconnect()
+			additionalNodesThreads.forEach(e => e.disconnect())
+		}).then(() => {
+			console.log('all nodes disconnected')
+			return true
+		}).then(() => done())
 	})
 })

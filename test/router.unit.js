@@ -28,6 +28,7 @@ describe('Router', () => {
 		internals.contacts = _.range(numNodes).map(e => Contact({
 				id: utils.generateId(e.toString()),
 				username: e.toString(),
+				publicKey: kp.public,
 				ip: '127.0.0.1',
 				port: 3000 + e,
 				logger
@@ -90,7 +91,7 @@ describe('Router', () => {
 		done()
 	})
 
-	it.skip('#requestPublicKey', async done => {
+	it('#requestPublicKey', async done => {
 		if (numNodes < 7) done(new Error('not enough nodes to run this test'))
 
 		/* 0 - 1 - 3 - 6
@@ -114,8 +115,8 @@ describe('Router', () => {
 		expect(getConnectedTo(4)).to.deep.equal(['5', '6'])
 		expect(getConnectedTo(5)).to.deep.equal([])
 		expect(getConnectedTo(6)).to.deep.equal([])
-
-		expect(await internals.nodes[0].requestPublicKey(internals.nodes[5].contact.id)).to.equal(internals.nodes[5].contact.publicKey)
+		const key = await internals.nodes[0].router.requestPublicKey(internals.nodes[5].contact.id)
+		expect(key).to.equal(internals.nodes[5].contact.publicKey)
 
 		done()
 	})

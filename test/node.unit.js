@@ -15,7 +15,7 @@ const logger = Logger({
 	maxLevel: debug ? 1 : 4
 })
 
-const numNodes = 50
+const numNodes = 20
 const internals = {}
 internals.nodes = []
 

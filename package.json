@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://github.com/raelcun/ded-network.git"
   },
+  "scripts": {
+    "prepublish": "gulp build"
+  },
   "author": "Dan Taylor",
   "license": "MIT",
   "bugs": {
@@ -22,6 +25,7 @@
     "ursa": "^0.9.3"
   },
   "devDependencies": {
+    "babel-cli": "^6.6.5",
     "babel-eslint": "^5.0.0",
     "babel-plugin-syntax-async-functions": "^6.5.0",
     "babel-plugin-transform-async-to-generator": "^6.7.4",

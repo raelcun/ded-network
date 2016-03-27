@@ -40,7 +40,6 @@ describe('Node', () => {
 			return done(new Error('not enough nodes to test'))
 		}
 
-		console.log(baseNode.asContact())
 		for (let i = 0; i < 19; i++) {
 			await additionalNodes[i].connect(baseNode.asContact())
 		}

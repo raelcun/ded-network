@@ -35,3 +35,7 @@ gulp.task('build', ['clean'], () => {
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(serverDest))
 })
+
+gulp.task('default', ['build'], () => {
+	
+})

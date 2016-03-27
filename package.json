@@ -8,7 +8,7 @@
     "url": "git+https://github.com/raelcun/ded-network.git"
   },
   "scripts": {
-    "prepublish": "gulp build"
+    "prepublish": "node_modules/gulp/bin/gulp.js build"
   },
   "author": "Dan Taylor",
   "license": "MIT",

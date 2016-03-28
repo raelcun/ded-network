@@ -199,6 +199,36 @@ describe('Node', () => {
 	})
 })
 
+describe('#message', () => {
+	before(async done => {
+		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '0.0.0.0', port: 3000 + e, logger })))
+		internals.nodes.forEach(e => console.log(e.username, e.id))
+		done()
+	})
+
+	after(async done => {
+		await Promise.all(internals.nodes.map(e => e.close()))
+		done()
+	})
+
+	it('sendMessage', async done => {
+		const baseNode = internals.nodes[0]
+		const additionalNodes = _(internals.nodes).drop(1).value()
+
+		//additionalNodes.forEach(e => e.connect(baseNode.asContact()))
+
+		for (let i = 0; i < additionalNodes.length; i++){
+			await additionalNodes[i].connect(baseNode.asContact())
+		}
+
+		console.log('All nodes connected')
+
+		const result = await additionalNodes[6].sendMessage('15', "hello")
+		console.log ('Got Result')
+		done()
+	})
+})
+
 describe('#childProcess', () => {
 
 	before(async done => {

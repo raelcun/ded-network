@@ -42,10 +42,18 @@ describe('RPC', () => {
 		it('send command', async done => {
 			const [sourceContact, destContact] = contacts
 			const [sourceRPC, destRPC] = rpcs
-			const strMessage = 'test message'
-			const command = Command.createMessageReq({ sourceContact, destContact, strMessage })
+			const queryId = utils.generateMessageId()
+			const state = {
+				requestedContactId: destContact.id,
+				requestedKeys: [],
+				queryId: queryId,
+				contacted: [sourceContact.id],
+				contactlist: []
+			}
+			const command = Command.createMessageReq({ sourceContact, destContact, state })
 			const handleCommand = received => {
-				expect(received.payload.message).to.deep.equal(strMessage)
+				console.log(received)
+				expect(received.payload.state).to.deep.equal(state)
 				done()
 			}
 			sourceRPC.setHandler(handleCommand)
@@ -56,11 +64,18 @@ describe('RPC', () => {
 		it('receive response', async done => {
 			const [sourceContact, destContact] = contacts
 			const [sourceRPC, destRPC] = rpcs
-			const strMessage = 'test message'
-			const command = Command.createMessageReq({ sourceContact, destContact, strMessage })
+			const queryId = utils.generateMessageId()
+			const state = {
+				requestedContactId: destContact.id,
+				requestedKeys: [],
+				queryId: queryId,
+				contacted: [sourceContact.id],
+				contactlist: []
+			}
+			const command = Command.createMessageReq({ sourceContact, destContact, state })
 			sourceRPC.setHandler(received => { })
 			destRPC.setHandler(received => {
-				destRPC.sendCommand(Command.createMessageRes({ sourceContact: destContact, destContact: sourceContact, orgRequestId: received.id }), kp.public)
+				destRPC.sendCommand(Command.createMessageRes({ sourceContact: destContact, destContact: sourceContact, orgRequestId: received.id, state: state }), kp.public)
 			})
 			sourceRPC.sendCommand(command, kp.public).then(result => {
 				expect(result.id).to.equal(command.id)

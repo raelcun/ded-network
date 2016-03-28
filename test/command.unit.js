@@ -64,8 +64,15 @@ describe('Command', () => {
 
 	it('#createMessageReq', done => {
 		const [sourceContact, destContact] = contacts
-		const strMessage = 'test message'
-		const command = Command.createMessageReq({ sourceContact, destContact, strMessage })
+		const queryId = utils.generateMessageId()
+		const state = {
+				requestedContactId: destContact.id,
+				requestedKeys: [],
+				queryId: queryId,
+				contacted: [sourceContact.id],
+				contactlist: []
+		}
+		const command = Command.createMessageReq({ sourceContact, destContact, state })
 		expect(command).to.deep.equal({
 			id: command.id || '',
 			destination: {
@@ -76,7 +83,7 @@ describe('Command', () => {
 				publicKey: destContact.publicKey
 			},
 			strCommand: 'MESSAGE',
-			payload: _.merge({ message: strMessage }, {
+			payload: _.merge({ state: state }, {
 				sourceUsername: sourceContact.username,
 				sourceId: sourceContact.id,
 				sourceIP: sourceContact.ip,

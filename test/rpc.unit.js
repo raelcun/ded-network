@@ -7,7 +7,6 @@ const expect = require('chai').expect,
 			utils = require('../lib/utils'),
 			Logger = require('../lib/logger'),
 			crypto = require('../lib/crypto'),
-			pkStore = require('../lib/pkStore'),
 			faker = require('faker'),
 			_ = require('lodash')
 
@@ -28,7 +27,6 @@ describe('RPC', () => {
 
 	before(async done => {
 		for (let c of contacts){
-			pkStore[c.id] = { publicKey: kp.public, privateKey: kp.private }
 			rpcs.push(await RPC({ contact: c, privateKey: kp.private, logger }))
 		}
 		done()
@@ -52,7 +50,7 @@ describe('RPC', () => {
 			}
 			sourceRPC.setHandler(handleCommand)
 			destRPC.setHandler(handleCommand)
-			sourceRPC.sendCommand(command)
+			sourceRPC.sendCommand(command, kp.public)
 		})
 
 		it('receive response', async done => {
@@ -62,9 +60,9 @@ describe('RPC', () => {
 			const command = Command.createMessageReq({ sourceContact, destContact, strMessage })
 			sourceRPC.setHandler(received => { })
 			destRPC.setHandler(received => {
-				destRPC.sendCommand(Command.createMessageRes({ sourceContact: destContact, destContact: sourceContact, orgRequestId: received.id }))
+				destRPC.sendCommand(Command.createMessageRes({ sourceContact: destContact, destContact: sourceContact, orgRequestId: received.id }), kp.public)
 			})
-			sourceRPC.sendCommand(command).then(result => {
+			sourceRPC.sendCommand(command, kp.public).then(result => {
 				expect(result.id).to.equal(command.id)
 				done()
 			})

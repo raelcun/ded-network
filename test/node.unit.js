@@ -223,7 +223,7 @@ describe('#childProcess', () => {
 			if (pendingConnections[m.message.messageID] !== undefined) {
 				pendingConnections[m.message.messageID].resolve(true)
 			}
-			
+
 			if (m.message.command === 'create'){
 				baseNode.publicKey = m.node.publicKey
 			}else if (m.message.command === 'connect') {
@@ -232,7 +232,7 @@ describe('#childProcess', () => {
 		})
 
 		baseNodeThread.on('error', err => console.log('baseNode Thread error', err))
-		
+
 		new Promise((resolve, reject) => {
 			const message = {command: 'create', node: baseNode, messageID: utils.generateMessageId()}
 			baseNodeThread.send(message, err => {
@@ -245,7 +245,7 @@ describe('#childProcess', () => {
 			return Promise.all(additionalNodes.map(e => new Promise((resolve, reject) => {
 				const newThread = cp.fork('./dist/lib/child.js')
 				additionalNodesThreads.push(newThread)
-				
+
 				newThread.on('message', (m) => {
 					if (pendingConnections[m.message.messageID] !== undefined) {
 						pendingConnections[m.message.messageID].resolve(true)
@@ -256,7 +256,7 @@ describe('#childProcess', () => {
 					}
 				})
 				newThread.on('error', (err) => { console.log('Thread Error', err) })
-				
+
 				const message = { command: 'create', node: e, messageID: utils.generateMessageId() }
 				newThread.send(message, err => {
 					pendingConnections[message.messageID] = { resolve, reject }

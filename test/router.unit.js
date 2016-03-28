@@ -7,7 +7,6 @@ const expect = require('chai').expect,
 			utils = require('../lib/utils'),
 			magic = require('../lib/magic'),
 			crypto = require('../lib/crypto'),
-			pkStore = require('../lib/pkStore'),
 			_ = require('lodash')
 
 const numNodes = 20
@@ -40,7 +39,6 @@ describe('Router', () => {
 	beforeEach(async done => {
 		internals.nodes = []
 		for (let i of _.range(numNodes)) {
-			pkStore[internals.contacts[i].id] = { publicKey: kp.public, privateKey: kp.private }
 			internals.nodes.push({
 				router: await Router({
 					logger, privateKey: kp.private, sourceContact: internals.contacts[i]
@@ -102,20 +100,23 @@ describe('Router', () => {
 		const connect = (from, to) => to.forEach(e => internals.nodes[from].router.updateContact(internals.nodes[e].contact))
 		const getConnectedTo = i => _.flatten(internals.nodes[i].router.buckets.filter(e => e.length > 0)).map(e => e.username).sort()
 
-
 		connect(0, [1, 2])
-		connect(1, [3, 4])
-		connect(3, [6])
-		connect(4, [5, 6])
+		connect(1, [0, 2, 3, 4])
+		connect(2, [0, 1])
+		connect(3, [1, 4, 6])
+		connect(4, [1, 3, 5, 6])
+		connect(5, [4])
+		connect(6, [3, 4])
 
 		expect(getConnectedTo(0)).to.deep.equal(['1', '2'])
-		expect(getConnectedTo(1)).to.deep.equal(['3', '4'])
-		expect(getConnectedTo(2)).to.deep.equal([])
-		expect(getConnectedTo(3)).to.deep.equal(['6'])
-		expect(getConnectedTo(4)).to.deep.equal(['5', '6'])
-		expect(getConnectedTo(5)).to.deep.equal([])
-		expect(getConnectedTo(6)).to.deep.equal([])
-		const key = await internals.nodes[0].router.requestPublicKey(internals.nodes[5].contact.id)
+		expect(getConnectedTo(1)).to.deep.equal(['0', '2', '3', '4'])
+		expect(getConnectedTo(2)).to.deep.equal(['0', '1'])
+		expect(getConnectedTo(3)).to.deep.equal(['1', '4', '6'])
+		expect(getConnectedTo(4)).to.deep.equal(['1', '3', '5', '6'])
+		expect(getConnectedTo(5)).to.deep.equal(['4'])
+		expect(getConnectedTo(6)).to.deep.equal(['3', '4'])
+
+		const key = await internals.nodes[0].router.findPublicKey('5')
 		expect(key).to.equal(internals.nodes[5].contact.publicKey)
 
 		done()
@@ -127,6 +128,7 @@ describe('Router', () => {
 
 		additionalNodes.forEach(e => {
 			baseNode.router.updateContact(e.contact)
+			e.router.updateContact(baseNode.contact)
 		})
 
 		const finalState = await baseNode.router.lookup(additionalNodes[2].contact.id)

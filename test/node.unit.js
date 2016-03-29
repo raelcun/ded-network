@@ -23,7 +23,7 @@ internals.nodes = []
 describe('Node', () => {
 
 	before(async done => {
-		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '0.0.0.0', port: 4000 + e, logger })))
+		internals.nodes = await Promise.all(_.range(numNodes).map(e => Node({ username: e.toString(), ip: '127.0.0.1', port: 4000 + e, logger })))
 		if (debug) { internals.nodes.forEach(e => console.log(e.username, e.id)) }
 		done()
 	})
